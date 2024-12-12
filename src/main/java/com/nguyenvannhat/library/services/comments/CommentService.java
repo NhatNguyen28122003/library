@@ -8,10 +8,16 @@ import java.util.Optional;
 
 public interface CommentService {
     List<Comment> getAllComments();
+
     Optional<Comment> getComment(long id);
-    Optional<Comment> getCommentByPost(Post post);
+
+    Comment getCommentByPost(Post post);
+
     Optional<Comment> addComment(Comment comment);
+
     Optional<Comment> updateComment(Comment comment);
+
     void deleteComment(Comment comment);
+
     void deleteById(long id);
 }

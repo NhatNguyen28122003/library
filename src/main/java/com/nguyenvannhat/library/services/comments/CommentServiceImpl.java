@@ -26,7 +26,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Optional<Comment> getCommentByPost(Post post) {
+    public Comment getCommentByPost(Post post) {
         return commentRepository.findCommentByPost(post);
     }
 

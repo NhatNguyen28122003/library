@@ -36,5 +36,11 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "WHERE p.id = :postId")
     public Comment findCommentByPostId(@Param("postId")Long postId);
 
-    Optional<Comment> findCommentByPost(Post post);
+    @Query(
+            "SELECT c FROM Comment c " +
+                    "INNER JOIN PostComment pc ON pc.commentId = c.id " +
+                    "INNER JOIN Post p ON p.id = pc.postId " +
+                    "WHERE p.id = :#{#post.id}"
+    )
+    Comment findCommentByPost(@Param("post") Post post);
 }
