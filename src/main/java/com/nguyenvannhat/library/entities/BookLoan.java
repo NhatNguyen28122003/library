@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "book_loan")
@@ -19,8 +20,6 @@ public class BookLoan {
     @Column(name = "id")
     private Long id;
 
-    private int quantity;
-
     @Column(name = "borrow_date")
     private Date borrowDate;
 
@@ -32,5 +31,4 @@ public class BookLoan {
 
     @Column(name = "book_id")
     private Long bookId;
-
 }

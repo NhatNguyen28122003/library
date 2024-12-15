@@ -20,7 +20,6 @@ public class AdminController {
         try {
             return new CustomResponse<>(HttpStatus.ACCEPTED,"ok",userService.getAuthorities());
         } catch (Exception e) {
-            e.printStackTrace();
             return new CustomResponse<>(HttpStatus.INTERNAL_SERVER_ERROR,"Internal Server Error",e);
         }
     }

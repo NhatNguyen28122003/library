@@ -5,14 +5,11 @@ import com.nguyenvannhat.library.entities.Book;
 import com.nguyenvannhat.library.exceptions.DataNotFoundException;
 import com.nguyenvannhat.library.exceptions.InvalidDataException;
 import com.nguyenvannhat.library.repositories.BookRepository;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFChartSheet;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,12 +32,18 @@ public class BookServiceImpl implements BookService {
     @Override
     public Book insertBook(BookDTO bookDTO) throws Exception {
         try {
-            Book book = Book.builder()
-                    .title(bookDTO.getTitle())
-                    .author(bookDTO.getAuthor())
-                    .pages(bookDTO.getPages())
-                    .build();
-            return bookRepository.save(book);
+            Book book = bookRepository.findByTitle(bookDTO.getTitle());
+            if (book != null) {
+                book.setQuantity(book.getQuantity() + 1);
+                return bookRepository.save(book);
+            } else {
+                book = Book.builder()
+                        .title(bookDTO.getTitle())
+                        .author(bookDTO.getAuthor())
+                        .pages(bookDTO.getPages())
+                        .build();
+                return bookRepository.save(book);
+            }
         } catch (Exception e) {
             throw new InvalidDataException(e.getMessage());
         }
@@ -52,7 +55,8 @@ public class BookServiceImpl implements BookService {
             Workbook workbook = new XSSFWorkbook(inputStream);
             Sheet sheet = workbook.getSheetAt(0);
             Iterator<Row> rowIterator = sheet.iterator();
-            Row row = rowIterator.next();
+            rowIterator.next();
+            Row row;
             while (rowIterator.hasNext()) {
                 row = rowIterator.next();
                 BookDTO bookDTO = new BookDTO();
@@ -97,7 +101,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void deleteBookByID(Long id) throws Exception {
+    public void deleteBookByID(Long id) {
         bookRepository.deleteById(id);
     }
 

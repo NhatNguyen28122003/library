@@ -24,11 +24,11 @@ public class User extends BaseEntity {
     private String password;
     @Column(name = "full_name")
     private String fullName;
-    @Column(name = "phone_number")
+    @Column(name = "phone_number", unique = true)
     private String phoneNumber;
     @Column(name = "email")
     private String email;
-    @Column(name = "identity_number")
+    @Column(name = "identity_number",unique = true, nullable = false)
     private Long identityNumber;
     @Column(name = "bitrh_day")
     private LocalDate birthDay;
@@ -36,4 +36,6 @@ public class User extends BaseEntity {
     private Integer age;
     @Column(name = "address")
     private String address;
+
+    private boolean isBorrowed = true;
 }

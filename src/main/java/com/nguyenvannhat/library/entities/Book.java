@@ -26,4 +26,5 @@ public class Book {
     @Column(name = "pages")
     private int pages;
 
+    private int quantity;
 }
