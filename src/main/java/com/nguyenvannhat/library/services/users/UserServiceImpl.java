@@ -33,10 +33,9 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public User register(UserDTO userDTO) throws Exception {
-        // Validate dữ liệu đầu vào
+    public void register(UserDTO userDTO) throws Exception {
         if (userDTO == null) {
-            throw new IllegalArgumentException("UserDTO must not be null");
+            throw new IllegalArgumentException("invalid Username/password");
         }
         userRepository.findByUsername(userDTO.getUsername())
                 .ifPresent(user -> {
@@ -64,7 +63,6 @@ public class UserServiceImpl implements UserService {
         userRole.setUserId(user1.getId());
         userRole.setRoleId(role.getId());
         userRoleRepository.save(userRole);
-        return user;
     }
 
 
@@ -150,7 +148,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(User user) throws Exception {
+    public void deleteUser(User user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent()){
             userRepository.delete(user);
         }

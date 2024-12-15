@@ -7,10 +7,9 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 public interface UserService {
-    User register(UserDTO userDTO) throws Exception;
+    void register(UserDTO userDTO) throws Exception;
     LoginResponse login(String email, String password) throws Exception;
     User updateUser(UserDTO userDTO) throws Exception;
     User findByUsername(String username) throws Exception;
@@ -18,6 +17,6 @@ public interface UserService {
     User findByEmail(String email) throws Exception;
     User findByPhoneNumber(String phoneNumber) throws Exception;
     User findByBirthDay(LocalDate birthDay) throws Exception;
-    void deleteUser(User user) throws Exception;
+    void deleteUser(User user);
     List<GrantedAuthority> getAuthorities() throws Exception;
 }

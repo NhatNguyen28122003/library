@@ -4,25 +4,23 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "posts")
+@Table(name = "user_post")
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Post extends BaseEntity {
+public class UserPost {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "title")
-    private String title;
 
-    @Column(name = "body")
-    private String body;
+    @Column(name = "user_id")
+    private Long userId;
 
-    @Column(name = "total_likes")
-    private int totalLikes;
+    @Column(name = "post_id")
+    private Long postId;
 }
