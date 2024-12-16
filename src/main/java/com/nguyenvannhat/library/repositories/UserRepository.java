@@ -13,20 +13,18 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
-    Optional<User> findByFullName(String fullName);
-    Optional<User> findByEmail(String email);
+    List<User> findByFullName(String fullName);
+    List<User> findByEmail(String email);
     Optional<User> findByPhoneNumber(String phoneNumber);
-    Optional<User> findByBirthDay(LocalDate birthDay);
+    List<User> findByBirthDay(LocalDate birthDay);
     @Query("SELECT f.functionName FROM Function f " +
             "JOIN RoleFunction rf ON rf.functionId = f.id " +
             "JOIN Role r ON r.id = rf.roleId " +
             "WHERE r.id = :roleId")
-    List<String> getFunctionRoleName(@Param("roleId") Long roleId);
-
+    List<Object> getFunctionRoleName(@Param("roleId") Long roleId);
     @Query("SELECT r FROM Role r " +
             "JOIN UserRole ur ON r.id = ur.roleId " +
             "JOIN User u ON ur.userId = u.id " +
             "WHERE u.username = :userName")
     Role getRoleByUserName(@Param("userName") String userName);
-
 }

@@ -51,7 +51,6 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post findPostByUser(User user) {
-
         return postRepository.findPostByUser(user);
     }
 

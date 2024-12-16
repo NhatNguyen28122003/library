@@ -45,11 +45,27 @@ public class BookLoanServiceImpl implements BookLoanService {
 
     @Override
     public void returnBook(Book book) {
-
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findByUsername(auth.getName()).orElseThrow(
+                () -> new RuntimeException("User not found")
+        );
+        List<Book> books = bookLoanRepository.getBookByUser(user);
+        if (books.contains(book)) {
+            book.setQuantity(book.getQuantity() + 1);
+            BookLoan bookLoan = bookLoanRepository.getBookLoanByUserIdAndBookId(user.getId(), book.getId());
+            bookRepository.deleteById(bookLoan.getId());
+        }
     }
 
     @Override
     public List<User> getBlackList(User user) {
-        return List.of();
+        return bookLoanRepository.getBlackListedUsers();
+    }
+
+    @Override
+    public void addUserBlackList(User user) {
+        if (!user.isBorrowed()) {
+            user.setBorrowed(true);
+        }
     }
 }

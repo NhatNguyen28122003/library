@@ -13,10 +13,10 @@ public interface UserService {
     LoginResponse login(String email, String password) throws Exception;
     User updateUser(UserDTO userDTO) throws Exception;
     User findByUsername(String username) throws Exception;
-    User findByFullName(String fullName) throws Exception;
-    User findByEmail(String email) throws Exception;
+    List<User> findByFullName(String fullName) throws Exception;
+    List<User> findByEmail(String email) throws Exception;
     User findByPhoneNumber(String phoneNumber) throws Exception;
-    User findByBirthDay(LocalDate birthDay) throws Exception;
+    List<User> findByBirthDay(LocalDate birthDay) throws Exception;
     void deleteUser(User user);
     List<GrantedAuthority> getAuthorities() throws Exception;
 }

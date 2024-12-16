@@ -120,17 +120,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByFullName(String fullName) throws Exception {
-        return userRepository.findByFullName(fullName).orElseThrow(
-                () -> new DataNotFoundException("User not found!")
-        );
+    public List<User> findByFullName(String fullName) {
+        return userRepository.findByFullName(fullName);
     }
 
     @Override
-    public User findByEmail(String email) throws Exception {
-        return userRepository.findByEmail(email).orElseThrow(
-                () -> new DataNotFoundException("User not found!")
-        );
+    public List<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     @Override
@@ -141,10 +137,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByBirthDay(LocalDate birthDay) throws Exception {
-        return userRepository.findByBirthDay(birthDay).orElseThrow(
-                () -> new DataNotFoundException("User not found!")
-        );
+    public List<User> findByBirthDay(LocalDate birthDay) {
+        return userRepository.findByBirthDay(birthDay);
     }
 
     @Override
@@ -161,7 +155,6 @@ public class UserServiceImpl implements UserService {
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new Exception("No authenticated user found");
         }
-
         return new ArrayList<>(authentication.getAuthorities());
     }
 

@@ -9,4 +9,5 @@ public interface BookLoanService {
     void borrowBook(Book book);
     void returnBook(Book book);
     List<User> getBlackList(User user);
+    void addUserBlackList(User user);
 }
