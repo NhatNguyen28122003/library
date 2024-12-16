@@ -17,12 +17,12 @@ public class Post extends BaseEntity {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "title")
+    @Column(name = "title",unique = true)
     private String title;
 
     @Column(name = "body")
     private String body;
 
     @Column(name = "total_likes")
-    private int totalLikes;
+    private int totalLikes = 0;
 }

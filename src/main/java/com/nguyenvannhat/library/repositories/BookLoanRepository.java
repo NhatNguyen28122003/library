@@ -16,14 +16,14 @@ public interface BookLoanRepository extends JpaRepository<BookLoan, Long> {
     @Query("SELECT b FROM Book b " +
             "INNER JOIN BookLoan bl ON bl.bookId = b.id " +
             "INNER JOIN User u ON u.id = bl.userId " +
-            "WHERE u.id = #{#user.id}")
+            "WHERE u.id = :#{#user.id}")
     List<Book> getBookByUser(@Param("user") User user);
 
 
     @Query("SELECT bl FROM BookLoan bl " +
             "INNER JOIN Book b ON b.id = bl.bookId " +
             "INNER JOIN User u ON bl.userId = u.id " +
-            "WHERE u.id = #{#userId} AND b.id = #{#bookId}")
+            "WHERE u.id = :#{#userId} AND b.id = :#{#bookId}")
     BookLoan getBookLoanByUserIdAndBookId(@Param("userId") Long userId,@Param("bookId") Long bookId);
 
     List<BookLoan> getBookLoanByBookId(@Param("bookId") Long bookId);

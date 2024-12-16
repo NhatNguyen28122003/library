@@ -20,5 +20,7 @@ public interface PostService {
 
     void deletePost(PostDTO postDTO);
 
+    void likePost(PostDTO postDTO);
+
 
 }

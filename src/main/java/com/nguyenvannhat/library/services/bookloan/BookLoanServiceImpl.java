@@ -64,8 +64,8 @@ public class BookLoanServiceImpl implements BookLoanService {
 
     @Override
     public void addUserBlackList(User user) {
-        if (!user.isBorrowed()) {
-            user.setBorrowed(true);
+        if (user.isBorrowed()) {
+            user.setBorrowed(false);
         }
     }
 }

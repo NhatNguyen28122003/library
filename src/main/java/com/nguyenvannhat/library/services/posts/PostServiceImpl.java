@@ -71,9 +71,14 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void deletePost(PostDTO postDTO) {
-        if (postRepository.findByTitle(postDTO.getTitle()) == null) {
+        if (postRepository.findPostByTitle(postDTO.getTitle()) == null) {
             return;
         };
-        postRepository.delete(postRepository.findByTitle(postDTO.getTitle()));
+        postRepository.delete(postRepository.findPostByTitle(postDTO.getTitle()));
+    }
+
+    @Override
+    public void likePost(PostDTO postDTO) {
+        
     }
 }
