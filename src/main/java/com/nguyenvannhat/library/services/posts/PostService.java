@@ -19,8 +19,12 @@ public interface PostService {
     void updatePost(Long id, PostDTO postDTO) throws DataNotFoundException;
 
     void deletePost(PostDTO postDTO);
+    void deleteById(Long id);
 
     void likePost(PostDTO postDTO);
+
+    void unlikePost(PostDTO postDTO);
+    List<PostDTO> getTopPosts(int limit);
 
 
 }

@@ -79,6 +79,37 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void likePost(PostDTO postDTO) {
-        
+        Post post = postRepository.findPostByTitle(postDTO.getTitle());
+        if (post == null) {
+            return;
+        }
+        post.setTotalLikes(post.getTotalLikes() + 1);
+        postRepository.save(post);
+    }
+
+    @Override
+    public void unlikePost(PostDTO postDTO) {
+        Post post = postRepository.findPostByTitle(postDTO.getTitle());
+        if (post == null && post.getTotalLikes() == 0) {
+            return;
+        }
+        post.setTotalLikes(post.getTotalLikes() - 1);
+        postRepository.save(post);
+    }
+    @Override
+    public List<PostDTO> getTopPosts(int limit) {
+        return postRepository.findAll()
+                .stream()
+                .sorted((post1, post2) -> Integer.compare(post2.getTotalLikes(), post1.getTotalLikes()))
+                .limit(limit)
+                .map(post -> new PostDTO(post.getTitle(), post.getBody()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        if (postRepository.findById(id).isPresent()) {
+            postRepository.deleteById(id);
+        }
     }
 }
