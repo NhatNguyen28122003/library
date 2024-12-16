@@ -19,7 +19,7 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping
-    @PreAuthorize("@roleChecker.hasPermission('" + "${api.v1.library.post.create}" + "')")
+    @PreAuthorize("@jwtUtils.hasPermission('" + "${api.v1.library.post.create}" + "')")
     public CustomResponse<?> createPost(@RequestBody PostDTO postDTO) {
         try {
             postService.createPost(postDTO);
@@ -30,7 +30,7 @@ public class PostController {
     }
 
     @GetMapping
-    @PreAuthorize("@roleChecker.hasPermission('" + "${api.v1.library.post.read}" + "')")
+    @PreAuthorize("@jwtUtils.hasPermission('" + "${api.v1.library.post.read}" + "')")
     public CustomResponse<?> getAllPosts() {
         try {
             List<PostDTO> posts = postService.getPosts();
@@ -41,7 +41,7 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("@roleChecker.hasPermission('" + "${api.v1.library.post.read}" + "')")
+    @PreAuthorize("@jwtUtils.hasPermission('" + "${api.v1.library.post.read}" + "')")
     public CustomResponse<?> getPostById(@PathVariable long id) {
         try {
             Post post = postService.getPostById(id);
@@ -52,7 +52,7 @@ public class PostController {
     }
 
     @GetMapping("/topPost")
-    @PreAuthorize("@roleChecker.hasPermission('" + "${api.v1.library.post.read}" + "')")
+    @PreAuthorize("@jwtUtils.hasPermission('" + "${api.v1.library.post.read}" + "')")
     public CustomResponse<List<PostDTO>> getTopPosts(@RequestParam(defaultValue = "5") int limit) {
         try {
             List<PostDTO> topPosts = postService.getTopPosts(limit);
@@ -64,7 +64,7 @@ public class PostController {
 
 
     @PutMapping("/{id}")
-    @PreAuthorize("@roleChecker.hasPermission('" + "${api.v1.library.post.update}" + "')")
+    @PreAuthorize("@jwtUtils.hasPermission('" + "${api.v1.library.post.update}" + "')")
     public CustomResponse<?> updatePost(@PathVariable long id, @RequestBody PostDTO postDTO) {
         try {
             postService.updatePost(id, postDTO);
@@ -75,7 +75,7 @@ public class PostController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("@roleChecker.hasPermission('" + "${api.v1.library.post.delete}" + "')")
+    @PreAuthorize("@jwtUtils.hasPermission('" + "${api.v1.library.post.delete}" + "')")
     public CustomResponse<?> deletePost(@PathVariable long id) {
         try {
             postService.deleteById(id);

@@ -20,14 +20,14 @@ public class CommentController {
     private final CommentService commentService;
 
     @GetMapping
-    @PreAuthorize("@roleChecker.hasPermission('" + "${api.v1.library.comment.read}" + "')")
+    @PreAuthorize("@jwtUtils.hasPermission('" + "${api.v1.library.comment.read}" + "')")
     public CustomResponse<List<Comment>> getAllComments() {
         List<Comment> comments = commentService.getAllComments();
         return new CustomResponse<>(HttpStatus.OK, "Fetched all comments successfully", comments);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("@roleChecker.hasPermission('" + "${api.v1.library.comment.read}" + "')")
+    @PreAuthorize("@jwtUtils.hasPermission('" + "${api.v1.library.comment.read}" + "')")
     public CustomResponse<Comment> getCommentById(@PathVariable Long id) {
         Optional<Comment> comment = commentService.getComment(id);
         if (comment.isPresent()) {
@@ -37,7 +37,7 @@ public class CommentController {
     }
 
     @GetMapping("/post/{postId}")
-    @PreAuthorize("@roleChecker.hasPermission('" + "${api.v1.library.comment.read}" + "')")
+    @PreAuthorize("@jwtUtils.hasPermission('" + "${api.v1.library.comment.read}" + "')")
     public CustomResponse<Comment> getCommentByPost(@PathVariable Long postId) {
         Post post = new Post();
         post.setId(postId);
@@ -49,7 +49,7 @@ public class CommentController {
     }
 
     @PostMapping
-    @PreAuthorize("@roleChecker.hasPermission('" + "${api.v1.library.comment.create}" + "')")
+    @PreAuthorize("@jwtUtils.hasPermission('" + "${api.v1.library.comment.create}" + "')")
     public CustomResponse<Comment> addComment(@RequestBody Comment comment) {
         Optional<Comment> newComment = commentService.addComment(comment);
         if (newComment.isPresent()) {
@@ -59,7 +59,7 @@ public class CommentController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("@roleChecker.hasPermission('" + "${api.v1.library.comment.update}" + "')")
+    @PreAuthorize("@jwtUtils.hasPermission('" + "${api.v1.library.comment.update}" + "')")
     public CustomResponse<Comment> updateComment(@PathVariable Long id, @RequestBody Comment updatedComment) {
         updatedComment.setId(id);
         Optional<Comment> comment = commentService.updateComment(updatedComment);
@@ -70,7 +70,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("@roleChecker.hasPermission('" + "${api.v1.library.comment.delete}" + "')")
+    @PreAuthorize("@jwtUtils.hasPermission('" + "${api.v1.library.comment.delete}" + "')")
     public CustomResponse<Void> deleteCommentById(@PathVariable Long id) {
         if (!commentService.getComment(id).isPresent()) {
             return new CustomResponse<>(HttpStatus.NOT_FOUND, "Comment not found", null);
@@ -80,7 +80,7 @@ public class CommentController {
     }
 
     @DeleteMapping
-    @PreAuthorize("@roleChecker.hasPermission('" + "${api.v1.library.comment.delete}" + "')")
+    @PreAuthorize("@jwtUtils.hasPermission('" + "${api.v1.library.comment.delete}" + "')")
     public CustomResponse<Void> deleteComment(@RequestBody Comment comment) {
         if (comment == null || comment.getId() == null) {
             return new CustomResponse<>(HttpStatus.BAD_REQUEST, "Invalid comment object", null);
