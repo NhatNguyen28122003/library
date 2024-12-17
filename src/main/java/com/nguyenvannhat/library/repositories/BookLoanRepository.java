@@ -29,8 +29,4 @@ public interface BookLoanRepository extends JpaRepository<BookLoan, Long> {
     List<BookLoan> getBookLoanByBookId(@Param("bookId") Long bookId);
 
     List<BookLoan> getBookLoanByUserId(@Param("userId") Long userId);
-
-    @Query("SELECT u FROM User u " +
-            "WHERE u.isBorrowed = FALSE")
-    List<User> getBlackListedUsers();
 }

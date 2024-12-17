@@ -1,6 +1,5 @@
 package com.nguyenvannhat.library.services.bookloan;
 
-import com.nguyenvannhat.library.dtos.BookDTO;
 import com.nguyenvannhat.library.entities.Book;
 import com.nguyenvannhat.library.entities.BookLoan;
 import com.nguyenvannhat.library.entities.User;
@@ -12,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -59,7 +59,14 @@ public class BookLoanServiceImpl implements BookLoanService {
 
     @Override
     public List<User> getBlackList(User user) {
-        return bookLoanRepository.getBlackListedUsers();
+        List<User> users = userRepository.findAll();
+        List<User> blackList = new ArrayList<>();
+        for (User u : users) {
+            if (!u.getIsBorrowed()) {
+                blackList.add(u);
+            }
+        }
+        return blackList;
     }
 
     @Override

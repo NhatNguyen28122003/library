@@ -32,7 +32,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public void insertBook(BookDTO bookDTO) throws InvalidDataException {
         try {
-            Book book = bookRepository.findByTitle(bookDTO.getTitle());
+            Book book = bookRepository.findByTitle(bookDTO.getTitle()).orElse(null);
             if (book != null) {
                 book.setQuantity(book.getQuantity() + 1);
                 bookRepository.save(book);
@@ -73,31 +73,28 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void updateBook(Long id, BookDTO bookDTO) throws DataNotFoundException {
-        try {
-            Book book = bookRepository.findById(id).get();
-            if (!bookDTO.getTitle().isEmpty()) {
-                book.setTitle(bookDTO.getTitle());
-            }
-            if (!bookDTO.getAuthor().isEmpty()) {
-                book.setAuthor(bookDTO.getAuthor());
-            }
-            if (bookDTO.getPages() > 0) {
-                book.setPages(bookDTO.getPages());
-            }
-            bookRepository.save(book);
-        } catch (Exception e) {
-            throw new DataNotFoundException("Book not found!");
+        Book book = bookRepository.findById(id).orElseThrow(
+                () -> new DataNotFoundException("Book not found")
+        );
+        if (!bookDTO.getTitle().isEmpty()) {
+            book.setTitle(bookDTO.getTitle());
         }
+        if (!bookDTO.getAuthor().isEmpty()) {
+            book.setAuthor(bookDTO.getAuthor());
+        }
+        if (bookDTO.getPages() > 0) {
+            book.setPages(bookDTO.getPages());
+        }
+        bookRepository.save(book);
     }
 
     @Override
     public void deleteBook(BookDTO bookDTO) throws DataNotFoundException {
-        try {
-            Book book = bookRepository.findByTitle(bookDTO.getTitle());
-            bookRepository.deleteById(book.getId());
-        } catch (Exception e) {
-            throw new DataNotFoundException("Book not found!");
-        }
+        Book book = bookRepository.findByTitle(bookDTO.getTitle()).orElseThrow(
+                () -> new DataNotFoundException("Book not found")
+        );
+        bookRepository.deleteById(book.getId());
+
     }
 
     @Override

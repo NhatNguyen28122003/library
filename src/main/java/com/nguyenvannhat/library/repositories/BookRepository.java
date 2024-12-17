@@ -7,16 +7,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BookRepository extends JpaRepository<Book, Long> {
     @Query(
-            value = "SELECT c FROM categories c" +
-                    "INNER JOIN book_categories bc ON c.id = bc.id" +
-                    "INNER JOIN books c ON b.id = bc.id" +
-                    "WHERE b.name = :#{#book.name}",nativeQuery = true
+            "SELECT c FROM Category c " +
+                    "INNER JOIN BookCategories bc ON bc.categoryId = c.id " +
+                    "INNER JOIN Book b ON b.id = bc.bookId " +
+                    "WHERE b.id = :#{#book.id}"
     )
     List<Category> findCategoriesByBook(@Param("book") Book book);
-    Book findByTitle(String title);
+    Optional<Book> findByTitle(String title);
     List<Book> findByAuthor(String author);
     void deleteByTitle(String title);
 }
