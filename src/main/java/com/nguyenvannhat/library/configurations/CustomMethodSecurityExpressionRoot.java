@@ -14,7 +14,6 @@ import org.springframework.security.core.Authentication;
 public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot implements MethodSecurityExpressionOperations {
 
     private static final Logger logger = LoggerFactory.getLogger(CustomMethodSecurityExpressionRoot.class);
-
     private final HttpServletRequest httpServletRequest;
     private final RolePropertiesConfig rolePropertiesConfig;
 

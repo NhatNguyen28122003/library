@@ -21,14 +21,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final HttpServletRequest request;
     @PostMapping("/register")
     public CustomResponse<?> register(@RequestBody UserDTO userDTO) throws Exception {
         userService.register(userDTO);
         return new CustomResponse<>(HttpStatus.CREATED, "User created successfully", userDTO);
     }
     @GetMapping("/read/roles")
-    @PreAuthorize("fileRole(#request)")
+    @PreAuthorize("fileRole()")
     public CustomResponse<?> getRoles() throws Exception {
         List<GrantedAuthority> roles = userService.getAuthorities();
         return new CustomResponse<>(HttpStatus.ACCEPTED,"ok",roles);

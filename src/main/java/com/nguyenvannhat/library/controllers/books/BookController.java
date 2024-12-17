@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/books")
+@RequestMapping("/book")
 @RequiredArgsConstructor
 public class BookController {
 
@@ -22,7 +22,7 @@ public class BookController {
     private final HttpServletRequest httpServletRequest;
 
     @GetMapping
-    @PreAuthorize("fileRole(#httpServletRequest)")  // Custom security expression
+    @PreAuthorize("fileRole()")  // Custom security expression
     public List<BookDTO> getAllBooks() throws Exception{
         return bookService.getAllBooks().stream().map(
                 book -> new BookDTO(book.getTitle(), book.getAuthor(), book.getPages())
@@ -30,14 +30,14 @@ public class BookController {
     }
 
     @PostMapping("/insertBook")
-    @PreAuthorize("fileRole(#httpServletRequest)")
+    @PreAuthorize("fileRole()")
     public CustomResponse<?> insertBook(@RequestBody BookDTO bookDTO) throws Exception{
         bookService.insertBook(bookDTO);
         return new CustomResponse<>(HttpStatus.ACCEPTED, "Book created successfully!", bookDTO);
     }
 
     @PostMapping("/insertMultiBooks")
-    @PreAuthorize("fileRole(#httpServletRequest)")
+    @PreAuthorize("fileRole()")
     public CustomResponse<?> insertMultiBooks(@RequestBody List<BookDTO> bookDTOs) throws Exception{
         for (BookDTO bookDTO : bookDTOs) {
             bookService.insertBook(bookDTO);
@@ -45,36 +45,36 @@ public class BookController {
         return new CustomResponse<>(HttpStatus.ACCEPTED, "Books created successfully!", bookDTOs);
     }
 
-    @PostMapping("/importExcel")
-    @PreAuthorize("fileRole(#httpServletRequest)")
+    @PostMapping("/insert/importExcel")
+    @PreAuthorize("fileRole()")
     public CustomResponse<?> importExcel(@RequestParam("file") MultipartFile file) throws Exception{
         bookService.insertBooks(file);
         return new CustomResponse<>(HttpStatus.ACCEPTED, "Books imported successfully!", bookService.getAllBooks());
     }
 
-    @GetMapping("/exportExcel")
-    @PreAuthorize("fileRole(#httpServletRequest)")
+    @GetMapping("/read/exportExcel")
+    @PreAuthorize("fileRole()")
     public CustomResponse<?> exportExcel(@RequestBody List<BookDTO> bookDTOS)throws Exception {
         bookService.exportBooksToExcel(bookDTOS);
         return new CustomResponse<>(HttpStatus.ACCEPTED, "Books exported successfully!", bookService.getAllBooks());
     }
 
-    @PutMapping("/{id}")
-    @PreAuthorize("fileRole(#httpServletRequest)")
+    @PutMapping("/update/{id}")
+    @PreAuthorize("fileRole()")
     public CustomResponse<?> updateBook(@PathVariable Long id, @RequestBody BookDTO bookDTO) throws Exception{
         bookService.updateBook(id, bookDTO);
         return new CustomResponse<>(HttpStatus.ACCEPTED, "Book updated successfully!", bookService.getAllBooks());
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("fileRole(#httpServletRequest)")
+    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("fileRole()")
     public CustomResponse<?> deleteBook(@PathVariable Long id) throws Exception{
         bookService.deleteBookByID(id);
         return new CustomResponse<>(HttpStatus.ACCEPTED, "Book deleted successfully!", bookService.getAllBooks());
     }
 
-    @DeleteMapping
-    @PreAuthorize("fileRole(#httpServletRequest)")
+    @DeleteMapping("/delete")
+    @PreAuthorize("fileRole()")
     public CustomResponse<?> deleteBook(@RequestBody BookDTO bookDTO) throws Exception{
         bookService.deleteBook(bookDTO);
         return new CustomResponse<>(HttpStatus.ACCEPTED, "Book deleted successfully!", bookService.getAllBooks());

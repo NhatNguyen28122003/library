@@ -36,6 +36,7 @@ public class User extends BaseEntity {
     private Integer age;
     @Column(name = "address")
     private String address;
+
     @Column(name = "is_borrowed")
     private boolean isBorrowed = true;
 }
