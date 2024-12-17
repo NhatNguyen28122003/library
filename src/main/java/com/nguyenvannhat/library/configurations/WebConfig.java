@@ -34,11 +34,13 @@ public class WebConfig extends GlobalMethodSecurityConfiguration implements WebM
                 .authorizeHttpRequests(
                         authorizeRequests ->
                                 authorizeRequests
-                                        .requestMatchers("/users/**","/comments/**","/post/**").permitAll()
+                                        .requestMatchers("/user/register",
+                                                "/user/login","/user/information",
+                                                "/comments/**",
+                                                "/post/**").permitAll()
                                         .anyRequest().authenticated())
                 .addFilterAfter(jwtFilters, UsernamePasswordAuthenticationFilter.class);
         return http.build();
-
     }
 
     @Override

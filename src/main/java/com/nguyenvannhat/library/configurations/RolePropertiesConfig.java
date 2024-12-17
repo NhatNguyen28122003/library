@@ -23,6 +23,11 @@ public class RolePropertiesConfig {
     }
 
     public String getRoleForUri(String uri) {
-        return roleMappings.getProperty(uri);
+        for (String key : roleMappings.stringPropertyNames()) {
+            if (uri.contains(key)) {
+                return roleMappings.getProperty(key);
+            }
+        }
+        return null;
     }
 }
