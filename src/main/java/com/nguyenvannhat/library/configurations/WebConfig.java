@@ -1,10 +1,14 @@
 package com.nguyenvannhat.library.configurations;
 
+import com.nguyenvannhat.library.components.CustomMethodSecurityExpressionHandler;
 import com.nguyenvannhat.library.filters.JwtFilters;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -16,9 +20,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
-public class WebConfig implements WebMvcConfigurer {
+public class WebConfig extends GlobalMethodSecurityConfiguration implements WebMvcConfigurer {
 
     private final JwtFilters jwtFilters;
+    private final HttpServletRequest httpServletRequest;
+    private final RolePropertiesConfig rolePropertiesConfig;
 
 
     @Bean
@@ -35,5 +41,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     }
 
-
+    @Override
+    protected MethodSecurityExpressionHandler createExpressionHandler() {
+        return new CustomMethodSecurityExpressionHandler(httpServletRequest, rolePropertiesConfig);
+    }
 }

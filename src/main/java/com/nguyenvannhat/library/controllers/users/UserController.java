@@ -2,17 +2,14 @@ package com.nguyenvannhat.library.controllers.users;
 
 import com.nguyenvannhat.library.dtos.UserDTO;
 import com.nguyenvannhat.library.entities.User;
-import com.nguyenvannhat.library.respones.CustomResponse;
-import com.nguyenvannhat.library.respones.LoginResponse;
+import com.nguyenvannhat.library.responses.CustomResponse;
+import com.nguyenvannhat.library.responses.LoginResponse;
 import com.nguyenvannhat.library.services.users.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Arrays;
 
 @RestController
 @RequestMapping("/users")

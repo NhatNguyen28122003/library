@@ -1,8 +1,7 @@
 package com.nguyenvannhat.library.controllers.users;
 
 import com.nguyenvannhat.library.dtos.UserDTO;
-import com.nguyenvannhat.library.entities.User;
-import com.nguyenvannhat.library.respones.CustomResponse;
+import com.nguyenvannhat.library.responses.CustomResponse;
 import com.nguyenvannhat.library.services.users.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

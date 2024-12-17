@@ -2,7 +2,7 @@ package com.nguyenvannhat.library.services.users;
 
 import com.nguyenvannhat.library.dtos.UserDTO;
 import com.nguyenvannhat.library.entities.User;
-import com.nguyenvannhat.library.respones.LoginResponse;
+import com.nguyenvannhat.library.responses.LoginResponse;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.time.LocalDate;

@@ -1,4 +1,4 @@
-package com.nguyenvannhat.library.respones;
+package com.nguyenvannhat.library.responses;
 
 import lombok.Getter;
 import lombok.Setter;

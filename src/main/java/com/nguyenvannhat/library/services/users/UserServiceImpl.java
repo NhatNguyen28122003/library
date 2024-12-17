@@ -11,7 +11,7 @@ import com.nguyenvannhat.library.exceptions.InvalidDataException;
 import com.nguyenvannhat.library.repositories.RoleRepository;
 import com.nguyenvannhat.library.repositories.UserRepository;
 import com.nguyenvannhat.library.repositories.UserRoleRepository;
-import com.nguyenvannhat.library.respones.LoginResponse;
+import com.nguyenvannhat.library.responses.LoginResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;

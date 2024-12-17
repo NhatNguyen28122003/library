@@ -1,7 +1,7 @@
 package com.nguyenvannhat.library.controllers.books;
 
 import com.nguyenvannhat.library.dtos.BookDTO;
-import com.nguyenvannhat.library.respones.CustomResponse;
+import com.nguyenvannhat.library.responses.CustomResponse;
 import com.nguyenvannhat.library.services.books.BookService;
 import com.nguyenvannhat.library.services.users.UserService;
 

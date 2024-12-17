@@ -9,10 +9,12 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    @Query("SELECT p FROM Post p " +
+    @Query(
+            "SELECT p FROM Post p " +
             "INNER JOIN UserPost up ON up.postId = p.id " +
             "INNER JOIN User u ON u.id = up.userId " +
-            "WHERE u.username = :#{#user.username}")
+            "WHERE u.username = :#{#user.username}"
+    )
     Post findPostByUser(@Param("user") User user);
 
     Post findPostByTitle(String title);

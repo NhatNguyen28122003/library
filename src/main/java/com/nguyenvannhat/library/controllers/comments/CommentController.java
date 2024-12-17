@@ -2,7 +2,7 @@ package com.nguyenvannhat.library.controllers.comments;
 
 import com.nguyenvannhat.library.entities.Comment;
 import com.nguyenvannhat.library.entities.Post;
-import com.nguyenvannhat.library.respones.CustomResponse;
+import com.nguyenvannhat.library.responses.CustomResponse;
 import com.nguyenvannhat.library.services.comments.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
