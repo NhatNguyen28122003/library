@@ -32,7 +32,7 @@ public class PostController {
     @GetMapping
     @PreAuthorize("fileRole()")
     @Operation(summary = "Get all posts", description = "Retrieve a list of all posts.")
-    public ResponseEntity<?> getAllPosts() throws Exception {
+    public ResponseEntity<?> getAllPosts() {
         List<PostDTO> posts = postService.getPosts();
         return CustomResponse.success(posts);
     }
@@ -48,7 +48,7 @@ public class PostController {
     @GetMapping("/topPost")
     @PreAuthorize("fileRole()")
     @Operation(summary = "Get top posts", description = "Retrieve a limited number of top posts. Default limit is 5.")
-    public ResponseEntity<?> getTopPosts(@RequestParam(defaultValue = "5") int limit) throws Exception {
+    public ResponseEntity<?> getTopPosts(@RequestParam(defaultValue = "5") int limit) {
         List<PostDTO> topPosts = postService.getTopPosts(limit);
         return CustomResponse.success(topPosts);
     }
