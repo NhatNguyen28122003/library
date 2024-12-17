@@ -30,7 +30,7 @@ public class BookLoanServiceImpl implements BookLoanService {
             User user = userRepository.findByUsername(auth.getName()).orElseThrow(
                     () -> new RuntimeException("User not found")
             );
-            if (user.isBorrowed()) {
+            if (user.getIsBorrowed()) {
                 BookLoan bookLoan = BookLoan.builder()
                         .userId(user.getId())
                         .bookId(book.getId())
@@ -64,8 +64,9 @@ public class BookLoanServiceImpl implements BookLoanService {
 
     @Override
     public void addUserBlackList(User user) {
-        if (user.isBorrowed()) {
-            user.setBorrowed(false);
-        }
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        user.setUpdateBy(auth.getName());
+        user.setIsBorrowed(false);
+        userRepository.save(user);
     }
 }

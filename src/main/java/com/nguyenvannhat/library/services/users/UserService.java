@@ -12,7 +12,7 @@ import java.util.List;
 public interface UserService {
     void register(UserDTO userDTO) throws Exception;
     LoginResponse login(String email, String password) throws Exception;
-    User updateUser(UserDTO userDTO) throws Exception;
+    void updateUser(UserDTO userDTO) throws Exception;
     User findByUsername(String username) throws DataNotFoundException;
     List<User> findByFullName(String fullName) throws Exception;
     List<User> findByEmail(String email) throws Exception;

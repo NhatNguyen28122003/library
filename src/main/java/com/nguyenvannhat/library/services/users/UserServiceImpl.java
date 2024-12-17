@@ -81,7 +81,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(UserDTO userDTO) throws Exception {
+    public void updateUser(UserDTO userDTO) throws Exception {
         User user = userRepository.findByUsername(userDTO.getUsername()).orElseThrow(
                 () -> new DataNotFoundException("User not found")
         );
@@ -109,7 +109,7 @@ public class UserServiceImpl implements UserService {
             user.setAddress(userDTO.getAddress());
         }
         user.setUpdateBy(authentication.getName());
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
     @Override

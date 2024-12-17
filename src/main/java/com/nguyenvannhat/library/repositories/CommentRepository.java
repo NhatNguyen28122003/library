@@ -16,17 +16,16 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "SELECT cm FROM Comment cm " +
                     "INNER JOIN UserComment usc ON usc.commentId = cm.id " +
                     "INNER JOIN User u ON u.id = usc.userId " +
-                    "WHERE u.fullName = :#{#user.fullName} AND u.id = :#{#user.id}"
+                    "WHERE u.username = :#{#user.username}"
     )
 
     public List<Comment> findByUser(@Param("user") User user);
-
 
     @Query(
             "SELECT u FROM User u " +
                     "INNER JOIN UserComment usc ON u.id = usc.userId " +
                     "INNER JOIN Comment c ON c.id = usc.commentId " +
-                    "WHERE c.id = :#{#comment.id} AND c.comment = :#{#comment.comment}"
+                    "WHERE c.id = :#{#comment.id}"
     )
     public User finByComment(@Param("comment") Comment comment);
 

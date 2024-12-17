@@ -35,12 +35,15 @@ public abstract class BaseEntity {
     @Column(name = "is_delete")
     private Boolean isDelete;
 
+    private Boolean isBorrowed;
+
     @PrePersist
     protected void onCreate() {
         this.createAt = LocalDateTime.now();
         this.updateAt = LocalDateTime.now();
         this.isActive = true;
         this.isDelete = false;
+        this.isBorrowed = true;
     }
 
     @PreUpdate
