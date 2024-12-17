@@ -31,6 +31,7 @@ public class User extends BaseEntity {
     @Column(name = "identity_number",unique = true, nullable = false)
     private Long identityNumber;
     @Column(name = "bitrh_day")
+    @Temporal(TemporalType.DATE)
     private LocalDate birthDay;
     @Column(name = "age")
     private Integer age;
