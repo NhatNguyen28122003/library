@@ -37,15 +37,15 @@ public class CustomResponse<T> {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // Cập nhật phương thức download để trả về file
-    public static ResponseEntity<CustomResponse<Void>> download(ResponseStatus status, String message, File file) {
+    public static ResponseEntity<byte[]> download(File file) {
         // Kiểm tra nếu tệp không tồn tại
         if (file == null || !file.exists()) {
-            CustomResponse<Void> response = new CustomResponse<>(HttpStatus.NOT_FOUND, "File not found", null);
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline")
+                    .body(null);
         }
 
-        // Đọc tệp tin và trả về trong ResponseEntity
         try {
             // Chuyển file thành byte array
             Path filePath = Paths.get(file.getAbsolutePath());
@@ -54,19 +54,19 @@ public class CustomResponse<T> {
             // Thiết lập headers cho tải file
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName());
-            headers.add(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
+            headers.add(HttpHeaders.CONTENT_TYPE, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
-            // Trả về ResponseEntity với nội dung tệp tin và headers
-            CustomResponse<Void> response = new CustomResponse<>(status.code(), message, null);  // Trả về thông tin về tệp tin
-            return ResponseEntity
-                    .status(HttpStatus.OK)
+            // Trả về ResponseEntity với nội dung file
+            return ResponseEntity.ok()
                     .headers(headers)
-                    .body(response);  // Chỉ trả về thông tin phản hồi, còn nội dung tệp tin sẽ được tải xuống qua headers
+                    .body(fileBytes);
 
         } catch (IOException e) {
             // Xử lý trường hợp lỗi khi đọc file
-            CustomResponse<Void> response = new CustomResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to download file", null);
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline")
+                    .body(null);
         }
     }
 }

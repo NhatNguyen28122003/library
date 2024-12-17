@@ -6,6 +6,8 @@ import com.nguyenvannhat.library.exceptions.DataNotFoundException;
 import com.nguyenvannhat.library.exceptions.InvalidDataException;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 public interface BookService {
@@ -15,6 +17,6 @@ public interface BookService {
     void insertBooks(MultipartFile multipartFile) throws InvalidDataException;
     void updateBook(Long id, BookDTO bookDTO) throws DataNotFoundException;
     void deleteBook(BookDTO bookDTO) throws DataNotFoundException;
-    void exportBooksToExcel(List<BookDTO> bookDTO) throws DataNotFoundException;
+    File exportBooksToExcel(List<BookDTO> bookDTO) throws DataNotFoundException, FileNotFoundException;
     void deleteBookByID(Long id) ;
 }

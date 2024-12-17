@@ -2,6 +2,7 @@ package com.nguyenvannhat.library.services.comments;
 
 import com.nguyenvannhat.library.entities.Comment;
 import com.nguyenvannhat.library.entities.Post;
+import com.nguyenvannhat.library.exceptions.DataNotFoundException;
 import com.nguyenvannhat.library.repositories.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,19 +22,19 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Optional<Comment> getComment(long id) {
-        return commentRepository.findById(id);
+    public Comment getCommentById(Long id) throws Exception{
+        return commentRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Comment not found"));
     }
 
     @Override
-    public Comment getCommentByPost(Post post) {
+    public List<Comment> getCommentByPost(Post post) {
         return commentRepository.findCommentByPost(post);
     }
 
     @Override
     public Optional<Comment> addComment(Comment comment) {
         Comment newComment = commentRepository.save(comment);
-        return Optional.ofNullable(newComment);
+        return Optional.of(newComment);
     }
 
     @Override
@@ -41,9 +42,8 @@ public class CommentServiceImpl implements CommentService {
         Comment existingComment = commentRepository.findById(comment.getId()).orElse(null);
         if (existingComment != null) {
             existingComment.setComment(comment.getComment());
-            // Cập nhật các trường khác
             Comment updatedComment = commentRepository.save(existingComment);
-            return Optional.ofNullable(updatedComment);
+            return Optional.of(updatedComment);
         }
         return Optional.empty();
     }

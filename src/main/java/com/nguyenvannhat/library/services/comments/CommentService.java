@@ -9,9 +9,9 @@ import java.util.Optional;
 public interface CommentService {
     List<Comment> getAllComments();
 
-    Optional<Comment> getComment(long id);
+    Comment getCommentById(Long id) throws Exception;
 
-    Comment getCommentByPost(Post post);
+    List<Comment> getCommentByPost(Post post);
 
     Optional<Comment> addComment(Comment comment);
 

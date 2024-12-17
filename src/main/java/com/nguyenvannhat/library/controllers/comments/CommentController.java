@@ -4,88 +4,71 @@ import com.nguyenvannhat.library.entities.Comment;
 import com.nguyenvannhat.library.entities.Post;
 import com.nguyenvannhat.library.responses.CustomResponse;
 import com.nguyenvannhat.library.services.comments.CommentService;
+import com.nguyenvannhat.library.services.posts.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/comments")
+@RequestMapping("/comment")
 @RequiredArgsConstructor
 public class CommentController {
 
     private final CommentService commentService;
+    private final PostService postService;
 
-    @GetMapping
-    @PreAuthorize("@jwtUtils.hasPermission('" + "${api.v1.library.comment.read}" + "')")
+    @GetMapping("/read")
+    @PreAuthorize("fileRole()")
     public CustomResponse<List<Comment>> getAllComments() {
         List<Comment> comments = commentService.getAllComments();
         return new CustomResponse<>(HttpStatus.OK, "Fetched all comments successfully", comments);
     }
 
-    @GetMapping("/{id}")
-    @PreAuthorize("@jwtUtils.hasPermission('" + "${api.v1.library.comment.read}" + "')")
-    public CustomResponse<Comment> getCommentById(@PathVariable Long id) {
-        Optional<Comment> comment = commentService.getComment(id);
-        if (comment.isPresent()) {
-            return new CustomResponse<>(HttpStatus.OK, "Comment found", comment.get());
-        }
-        return new CustomResponse<>(HttpStatus.NOT_FOUND, "Comment not found", null);
+    @GetMapping("/read/{id}")
+    @PreAuthorize("fileRole()")
+    public ResponseEntity<?> getCommentById(@PathVariable Long id) throws Exception {
+        Comment comment = commentService.getCommentById(id);
+        return CustomResponse.success(comment);
     }
 
-    @GetMapping("/post/{postId}")
-    @PreAuthorize("@jwtUtils.hasPermission('" + "${api.v1.library.comment.read}" + "')")
-    public CustomResponse<Comment> getCommentByPost(@PathVariable Long postId) {
-        Post post = new Post();
-        post.setId(postId);
-        Comment comment = commentService.getCommentByPost(post);
-        if (comment != null) {
-            return new CustomResponse<>(HttpStatus.OK, "Comment found for the post", comment);
-        }
-        return new CustomResponse<>(HttpStatus.NOT_FOUND, "No comment found for the post", null);
+    @GetMapping("/read/post/{postId}")
+    @PreAuthorize("fileRole()")
+    public ResponseEntity<?> getCommentByPost(@PathVariable Long postId) throws Exception {
+        Post post = postService.getPostById(postId);
+        List<Comment> comments = commentService.getCommentByPost(post);
+        return CustomResponse.success(comments);
     }
 
-    @PostMapping
-    @PreAuthorize("@jwtUtils.hasPermission('" + "${api.v1.library.comment.create}" + "')")
-    public CustomResponse<Comment> addComment(@RequestBody Comment comment) {
-        Optional<Comment> newComment = commentService.addComment(comment);
-        if (newComment.isPresent()) {
-            return new CustomResponse<>(HttpStatus.CREATED, "Comment added successfully", newComment.get());
-        }
-        return new CustomResponse<>(HttpStatus.BAD_REQUEST, "Failed to add comment", null);
+    @PostMapping("/create")
+    @PreAuthorize("fileRole()")
+    public ResponseEntity<?> addComment(@RequestBody Comment comment) {
+        commentService.addComment(comment);
+        return CustomResponse.success(comment);
     }
 
-    @PutMapping("/{id}")
-    @PreAuthorize("@jwtUtils.hasPermission('" + "${api.v1.library.comment.update}" + "')")
-    public CustomResponse<Comment> updateComment(@PathVariable Long id, @RequestBody Comment updatedComment) {
-        updatedComment.setId(id);
-        Optional<Comment> comment = commentService.updateComment(updatedComment);
-        if (comment.isPresent()) {
-            return new CustomResponse<>(HttpStatus.OK, "Comment updated successfully", comment.get());
-        }
-        return new CustomResponse<>(HttpStatus.NOT_FOUND, "Comment not found", null);
+    @PutMapping("/update/{id}")
+    @PreAuthorize("fileRole()")
+    public ResponseEntity<?> updateComment(@PathVariable Long id, @RequestBody Comment updatedComment) {
+        commentService.updateComment(updatedComment);
+        return CustomResponse.success(updatedComment);
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("@jwtUtils.hasPermission('" + "${api.v1.library.comment.delete}" + "')")
-    public CustomResponse<Void> deleteCommentById(@PathVariable Long id) {
-        if (!commentService.getComment(id).isPresent()) {
-            return new CustomResponse<>(HttpStatus.NOT_FOUND, "Comment not found", null);
-        }
+    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("fileRole()")
+    public ResponseEntity<?> deleteCommentById(@PathVariable Long id) {
         commentService.deleteById(id);
-        return new CustomResponse<>(HttpStatus.NO_CONTENT, "Comment deleted successfully", null);
+        return CustomResponse.success(id);
     }
 
-    @DeleteMapping
-    @PreAuthorize("@jwtUtils.hasPermission('" + "${api.v1.library.comment.delete}" + "')")
-    public CustomResponse<Void> deleteComment(@RequestBody Comment comment) {
-        if (comment == null || comment.getId() == null) {
-            return new CustomResponse<>(HttpStatus.BAD_REQUEST, "Invalid comment object", null);
-        }
+    @DeleteMapping("/delete")
+    @PreAuthorize("fileRole()")
+    public ResponseEntity<?> deleteComment(@RequestBody Comment comment) {
         commentService.deleteComment(comment);
-        return new CustomResponse<>(HttpStatus.NO_CONTENT, "Comment deleted successfully", null);
+        List<Comment> comments = commentService.getAllComments();
+        return CustomResponse.success(comments);
     }
 }

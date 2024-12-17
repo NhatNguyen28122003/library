@@ -1,5 +1,6 @@
 package com.nguyenvannhat.library.services.bookloan;
 
+import com.nguyenvannhat.library.dtos.BookDTO;
 import com.nguyenvannhat.library.entities.Book;
 import com.nguyenvannhat.library.entities.BookLoan;
 import com.nguyenvannhat.library.entities.User;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -75,5 +77,12 @@ public class BookLoanServiceImpl implements BookLoanService {
         user.setUpdateBy(auth.getName());
         user.setIsBorrowed(false);
         userRepository.save(user);
+    }
+
+    @Override
+    public List<BookDTO> getListBooksByUser(User user) {
+        return bookLoanRepository.getBookByUser(user).stream().map(
+                book -> new BookDTO(book.getTitle(), book.getAuthor(),book.getPages())
+        ).collect(Collectors.toList());
     }
 }

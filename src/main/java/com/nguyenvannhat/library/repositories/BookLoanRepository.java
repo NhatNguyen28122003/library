@@ -12,7 +12,6 @@ import java.util.List;
 
 public interface BookLoanRepository extends JpaRepository<BookLoan, Long> {
 
-
     @Query("SELECT b FROM Book b " +
             "INNER JOIN BookLoan bl ON bl.bookId = b.id " +
             "INNER JOIN User u ON u.id = bl.userId " +
@@ -26,7 +25,9 @@ public interface BookLoanRepository extends JpaRepository<BookLoan, Long> {
             "WHERE u.id = :#{#userId} AND b.id = :#{#bookId}")
     BookLoan getBookLoanByUserIdAndBookId(@Param("userId") Long userId,@Param("bookId") Long bookId);
 
+    @Query("SELECT bl FROM BookLoan bl WHERE bl.bookId = :#{#bookId}")
     List<BookLoan> getBookLoanByBookId(@Param("bookId") Long bookId);
 
+    @Query("SELECT bl FROM BookLoan bl WHERE bl.userId = :#{#userId}")
     List<BookLoan> getBookLoanByUserId(@Param("userId") Long userId);
 }

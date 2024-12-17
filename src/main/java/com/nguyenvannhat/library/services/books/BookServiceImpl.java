@@ -14,8 +14,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Iterator;
 import java.util.List;
 
@@ -103,28 +102,35 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void exportBooksToExcel(List<BookDTO> books) throws DataNotFoundException {
-        try {
-            Workbook workbook = new XSSFWorkbook();
-            Sheet sheet = workbook.createSheet("Books");
-            Row headerRow = sheet.createRow(0);
-            String[] headers = {"Title", "Author", "Pages"};
-            for (int i = 0; i < headers.length; i++) {
-                Cell cell = headerRow.createCell(i);
-                cell.setCellValue(headers[i]);
-            }
-            int rowIndex = 1;
-            for (BookDTO book : books) {
-                Row dataRow = sheet.createRow(rowIndex++);
-                dataRow.createCell(0).setCellValue(book.getTitle());
-                dataRow.createCell(1).setCellValue(book.getAuthor());
-                dataRow.createCell(2).setCellValue(book.getPages());
-            }
-            String filePath = "books.xlsx";
-            workbook.write(new FileOutputStream(filePath));
-            workbook.close();
-        } catch (Exception e) {
-            throw new DataNotFoundException("Books not found!");
+    public File exportBooksToExcel(List<BookDTO> books) throws DataNotFoundException, FileNotFoundException {
+        if (books == null || books.isEmpty()) {
+            throw new DataNotFoundException("No books available to export.");
         }
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Books");
+        String[] headers = {"Title", "Author", "Pages"};
+        Row headerRow = sheet.createRow(0);
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+        }
+        int rowIndex = 1;
+        for (BookDTO book : books) {
+            Row row = sheet.createRow(rowIndex++);
+            row.createCell(0).setCellValue(book.getTitle());
+            row.createCell(1).setCellValue(book.getAuthor());
+            row.createCell(2).setCellValue(book.getPages());
+        }
+
+        String filePath = "books.xlsx";
+        try (FileOutputStream outputStream = new FileOutputStream(filePath)) {
+            workbook.write(outputStream);
+            workbook.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return new File(filePath);
     }
+
 }
