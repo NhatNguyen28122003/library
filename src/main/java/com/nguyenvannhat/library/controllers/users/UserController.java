@@ -47,7 +47,8 @@ public class UserController {
         return userService.login(userDTO.getUsername(), userDTO.getPassword());
     }
 
-    @GetMapping("/information")
+    @GetMapping("/read/information")
+    @PreAuthorize("fileRole()")
     @Operation(summary = "Get user information", description = "Retrieve the currently authenticated user's details")
     public ResponseEntity<?> getUserInformation() throws Exception {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -56,6 +57,7 @@ public class UserController {
     }
 
     @PutMapping("/update/blackList")
+    @PreAuthorize("fileRole()")
     @Operation(summary = "Update user blacklist", description = "Add a user to the blacklist")
     public ResponseEntity<?> updateBlackList(@RequestBody UserDTO userDTO) throws Exception {
         User user = userService.findByUsername(userDTO.getUsername());
