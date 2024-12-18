@@ -29,6 +29,7 @@ public class PostServiceImpl implements PostService {
         Post post = Post.builder()
                 .title(postDTO.getTitle())
                 .body(postDTO.getBody())
+                .totalLikes(0)
                 .build();
         post.setCreateBy(user.getFullName());
         post.setUpdateBy(user.getFullName());
@@ -73,7 +74,7 @@ public class PostServiceImpl implements PostService {
     public void deletePost(PostDTO postDTO) {
         if (postRepository.findPostByTitle(postDTO.getTitle()) == null) {
             return;
-        };
+        }
         postRepository.delete(postRepository.findPostByTitle(postDTO.getTitle()));
     }
 
@@ -90,7 +91,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public void unlikePost(PostDTO postDTO) {
         Post post = postRepository.findPostByTitle(postDTO.getTitle());
-        if (post == null && post.getTotalLikes() == 0) {
+        if (post == null || post.getTotalLikes() == 0) {
             return;
         }
         post.setTotalLikes(post.getTotalLikes() - 1);

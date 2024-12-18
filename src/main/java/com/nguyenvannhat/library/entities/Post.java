@@ -23,6 +23,5 @@ public class Post extends BaseEntity {
     @Column(name = "body")
     private String body;
 
-    @Column(name = "total_likes")
-    private int totalLikes = 0;
+    private int totalLikes;
 }
