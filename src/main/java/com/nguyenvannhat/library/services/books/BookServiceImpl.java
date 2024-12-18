@@ -1,5 +1,6 @@
 package com.nguyenvannhat.library.services.books;
 
+import com.nguyenvannhat.library.constant.Constant;
 import com.nguyenvannhat.library.dtos.BookDTO;
 import com.nguyenvannhat.library.entities.Book;
 import com.nguyenvannhat.library.exceptions.DataNotFoundException;
@@ -73,7 +74,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public void updateBook(Long id, BookDTO bookDTO) throws DataNotFoundException {
         Book book = bookRepository.findById(id).orElseThrow(
-                () -> new DataNotFoundException("Book not found")
+                () -> new DataNotFoundException(Constant.BOOK_NOT_FOUND)
         );
         if (!bookDTO.getTitle().isEmpty()) {
             book.setTitle(bookDTO.getTitle());

@@ -1,6 +1,7 @@
 package com.nguyenvannhat.library.configurations;
 
 import com.nguyenvannhat.library.components.CustomUserDetails;
+import com.nguyenvannhat.library.constant.Constant;
 import com.nguyenvannhat.library.entities.User;
 import com.nguyenvannhat.library.repositories.RoleRepository;
 import com.nguyenvannhat.library.repositories.UserRepository;
@@ -24,7 +25,7 @@ public class SecurityConfig{
     public UserDetailsService userDetailsService(){
         return username -> {
             User user = userRepository.findByUsername(username).orElseThrow(
-                    () -> new UsernameNotFoundException("User " + username + " not found")
+                    () -> new UsernameNotFoundException(Constant.USER_NOT_FOUND)
             );
             return new CustomUserDetails(user,userRepository);
         };
