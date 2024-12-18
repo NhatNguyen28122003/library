@@ -11,9 +11,11 @@ import java.util.Optional;
 
 public interface FunctionRepository extends JpaRepository<Function, Long> {
     Optional<Function> findByFunctionName(String name);
-    @Query(value = "SELECT f.function_name FROM functions f" +
-                    "INNER JOIN role_functions rf ON rf.function_id = f.id" +
-                    "INNER JOIN roles r ON r.id = rf.role_id" +
-                    "WHERE r.name = :roleName",nativeQuery = true)
-    List<String> getFunctionsByRoleName(@Param("roleName") String roleName);
+    @Query(
+            "SELECT f FROM Function f " +
+                    "INNER JOIN RoleFunction rf ON rf.functionId = f.id " +
+                    "INNER JOIN Role r ON r.id = rf.id " +
+                    "WHERE r.id = :#{#role.id}"
+    )
+    List<String> getFunctionsByRole(@Param("role") Role role);
 }

@@ -9,9 +9,6 @@ import org.springframework.security.access.expression.method.DefaultMethodSecuri
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;
 
-/**
- * Custom Method Security Expression Handler to integrate CustomMethodSecurityExpressionRoot.
- */
 @RequiredArgsConstructor
 public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurityExpressionHandler {
 

@@ -1,5 +1,4 @@
 package com.nguyenvannhat.library.controllers.books;
-
 import com.nguyenvannhat.library.dtos.BookDTO;
 import com.nguyenvannhat.library.entities.User;
 import com.nguyenvannhat.library.responses.CustomResponse;
@@ -8,7 +7,6 @@ import com.nguyenvannhat.library.services.books.BookService;
 import com.nguyenvannhat.library.services.users.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

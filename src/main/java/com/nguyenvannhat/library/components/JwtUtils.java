@@ -74,7 +74,6 @@ public class JwtUtils {
     }
 
     public boolean validateToken(String token, UserDetails userDetails) {
-        //Ngày hết hạn phải sau ngày hôm nay thì mới sử dụng được token
         return getClaim(token, Claims::getExpiration).toInstant().isAfter(Instant.now())
                 && userDetails.getUsername().equals(getUserNameFromToken(token));
     }

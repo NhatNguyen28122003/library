@@ -18,7 +18,6 @@ public interface BookLoanRepository extends JpaRepository<BookLoan, Long> {
             "WHERE u.id = :#{#user.id}")
     List<Book> getBookByUser(@Param("user") User user);
 
-
     @Query("SELECT bl FROM BookLoan bl " +
             "INNER JOIN Book b ON b.id = bl.bookId " +
             "INNER JOIN User u ON bl.userId = u.id " +
