@@ -9,8 +9,8 @@ public interface CategoriesService {
     List<CategoryDTO> getAllCategories();
     Category getCategoryById(Long id) throws Exception;
     Category findByName(String name) throws Exception;
-    Category createCategory(CategoryDTO categoryDTO) throws Exception;
-    Category updateCategory(Long id,CategoryDTO categoryDTO) throws Exception;
+    void createCategory(CategoryDTO categoryDTO) throws Exception;
+    void updateCategory(Long id, CategoryDTO categoryDTO) throws Exception;
     void deleteCategory(Long id) throws Exception;
     void deleteCategoryByName(String name) throws Exception;
 

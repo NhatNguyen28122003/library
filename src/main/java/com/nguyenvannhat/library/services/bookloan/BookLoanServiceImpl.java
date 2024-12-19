@@ -60,12 +60,12 @@ public class BookLoanServiceImpl implements BookLoanService {
     }
 
     @Override
-    public List<User> getBlackList(User user) {
+    public List<String> getBlackList() {
         List<User> users = userRepository.findAll();
-        List<User> blackList = new ArrayList<>();
+        List<String> blackList = new ArrayList<>();
         for (User u : users) {
             if (!u.getIsBorrowed()) {
-                blackList.add(u);
+                blackList.add(u.getFullName());
             }
         }
         return blackList;
@@ -76,6 +76,14 @@ public class BookLoanServiceImpl implements BookLoanService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         user.setUpdateBy(auth.getName());
         user.setIsBorrowed(false);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void removeUserBlackList(User user) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        user.setUpdateBy(auth.getName());
+        user.setIsBorrowed(true);
         userRepository.save(user);
     }
 

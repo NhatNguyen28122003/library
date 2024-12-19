@@ -3,8 +3,10 @@ package com.nguyenvannhat.library.services.posts;
 import com.nguyenvannhat.library.dtos.PostDTO;
 import com.nguyenvannhat.library.entities.Post;
 import com.nguyenvannhat.library.entities.User;
+import com.nguyenvannhat.library.entities.UserPost;
 import com.nguyenvannhat.library.exceptions.DataNotFoundException;
 import com.nguyenvannhat.library.repositories.PostRepository;
+import com.nguyenvannhat.library.repositories.UserPostRepository;
 import com.nguyenvannhat.library.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final UserPostRepository userPostRepository;
 
     @Override
     public void createPost(PostDTO postDTO) throws DataNotFoundException {
@@ -33,7 +36,12 @@ public class PostServiceImpl implements PostService {
                 .build();
         post.setCreateBy(user.getFullName());
         post.setUpdateBy(user.getFullName());
-        postRepository.save(post);
+        Long postId= postRepository.save(post).getId();
+        UserPost userPost = UserPost.builder()
+                .postId(postId)
+                .userId(user.getId())
+                .build();
+        userPostRepository.save(userPost);
     }
 
     @Override
@@ -97,6 +105,7 @@ public class PostServiceImpl implements PostService {
         post.setTotalLikes(post.getTotalLikes() - 1);
         postRepository.save(post);
     }
+
     @Override
     public List<PostDTO> getTopPosts(int limit) {
         return postRepository.findAll()

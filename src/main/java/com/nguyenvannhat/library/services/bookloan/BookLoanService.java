@@ -9,7 +9,8 @@ import java.util.List;
 public interface BookLoanService {
     void borrowBook(Book book);
     void returnBook(Book book);
-    List<User> getBlackList(User user);
+    List<String> getBlackList();
     void addUserBlackList(User user);
+    void removeUserBlackList(User user);
     List<BookDTO> getListBooksByUser(User user);
 }

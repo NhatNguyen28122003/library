@@ -5,6 +5,7 @@ import com.nguyenvannhat.library.dtos.CategoryDTO;
 import com.nguyenvannhat.library.entities.Category;
 import com.nguyenvannhat.library.exceptions.DataAlreadyException;
 import com.nguyenvannhat.library.exceptions.DataNotFoundException;
+import com.nguyenvannhat.library.repositories.BookCategoryRepository;
 import com.nguyenvannhat.library.repositories.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoriesService{
     private final CategoryRepository categoryRepository;
+    private final BookCategoryRepository bookCategoryRepository;
     @Override
     public List<CategoryDTO> getAllCategories() {
         return categoryRepository.findAll().stream().map(
@@ -38,18 +40,18 @@ public class CategoryServiceImpl implements CategoriesService{
     }
 
     @Override
-    public Category createCategory(CategoryDTO categoryDTO) throws Exception {
+    public void createCategory(CategoryDTO categoryDTO) throws Exception {
         if (categoryRepository.findByName(categoryDTO.getName()).isPresent()) {
             throw new DataAlreadyException(Constant.CATEGORY_ALREADY_EXISTS);
         }
         Category category = Category.builder()
                 .name(categoryDTO.getName())
                 .build();
-        return categoryRepository.save(category);
+        categoryRepository.save(category);
     }
 
     @Override
-    public Category updateCategory(Long id, CategoryDTO categoryDTO) throws Exception {
+    public void updateCategory(Long id, CategoryDTO categoryDTO) throws Exception {
         if (categoryRepository.findById(id).isPresent() &&
         categoryRepository.findByName(categoryDTO.getName()).isPresent()) {
             throw new DataAlreadyException(Constant.CATEGORY_ALREADY_EXISTS);
@@ -58,7 +60,7 @@ public class CategoryServiceImpl implements CategoriesService{
                 () -> new DataNotFoundException(Constant.CATEGORY_NOT_FOUND)
         );
         category.setName(categoryDTO.getName());
-        return categoryRepository.save(category);
+        categoryRepository.save(category);
     }
 
     @Override
@@ -66,6 +68,7 @@ public class CategoryServiceImpl implements CategoriesService{
         Category category = categoryRepository.findById(id).orElseThrow(
                 () -> new DataNotFoundException(Constant.CATEGORY_NOT_FOUND)
         );
+        bookCategoryRepository.deleteByCategoryId(category.getId());
         categoryRepository.delete(category);
     }
 
@@ -74,6 +77,7 @@ public class CategoryServiceImpl implements CategoriesService{
         Category category = categoryRepository.findByName(name).orElseThrow(
                 () -> new DataNotFoundException(Constant.CATEGORY_NOT_FOUND)
         );
+        bookCategoryRepository.deleteByCategoryId(category.getId());
         categoryRepository.delete(category);
     }
 }

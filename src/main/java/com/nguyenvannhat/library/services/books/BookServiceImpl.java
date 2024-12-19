@@ -3,9 +3,14 @@ package com.nguyenvannhat.library.services.books;
 import com.nguyenvannhat.library.constant.Constant;
 import com.nguyenvannhat.library.dtos.BookDTO;
 import com.nguyenvannhat.library.entities.Book;
+import com.nguyenvannhat.library.entities.BookCategories;
+import com.nguyenvannhat.library.entities.Category;
 import com.nguyenvannhat.library.exceptions.DataNotFoundException;
 import com.nguyenvannhat.library.exceptions.InvalidDataException;
+import com.nguyenvannhat.library.repositories.BookCategoryRepository;
 import com.nguyenvannhat.library.repositories.BookRepository;
+import com.nguyenvannhat.library.repositories.CategoryRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -16,13 +21,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
+    private final BookCategoryRepository bookCategoryRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
     public List<Book> getAllBooks() {
@@ -30,22 +40,20 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void insertBook(BookDTO bookDTO) throws InvalidDataException {
-        try {
-            Book book = bookRepository.findByTitle(bookDTO.getTitle()).orElse(null);
-            if (book != null) {
-                book.setQuantity(book.getQuantity() + 1);
-                bookRepository.save(book);
-            } else {
-                book = Book.builder()
-                        .title(bookDTO.getTitle())
-                        .author(bookDTO.getAuthor())
-                        .pages(bookDTO.getPages())
-                        .build();
-                bookRepository.save(book);
+    public void insertBook(BookDTO bookDTO) {
+        Optional<Book> optionalBook = bookRepository.findByTitle(bookDTO.getTitle());
+        if (optionalBook.isPresent()) {
+            Book existingBook = optionalBook.get();
+            existingBook.setQuantity(existingBook.getQuantity() + 1);
+            bookRepository.save(existingBook);
+        } else {
+            Book book = Book.builder().title(bookDTO.getTitle()).author(bookDTO.getAuthor()).pages(bookDTO.getPages()).build();
+            Book book1 = bookRepository.save(book);
+            for (String categoryName : bookDTO.getCategoryName()) {
+                Category category = categoryRepository.findByName(categoryName).orElseThrow();
+                BookCategories bookCategories = BookCategories.builder().bookId(book1.getId()).categoryId(category.getId()).build();
+                bookCategoryRepository.save(bookCategories);
             }
-        } catch (Exception e) {
-            throw new InvalidDataException(e.getMessage());
         }
     }
 
@@ -72,6 +80,17 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public List<BookDTO> findAllBooksByCategory(Category category) {
+        return categoryRepository.findBooksByCategory(category)
+                .stream().map(
+                        book -> new BookDTO(book.getTitle(),
+                                book.getAuthor(),
+                                book.getPages(),
+                                new ArrayList<>())
+                ).collect(Collectors.toList());
+    }
+
+    @Override
     public void updateBook(Long id, BookDTO bookDTO) throws DataNotFoundException {
         Book book = bookRepository.findById(id).orElseThrow(
                 () -> new DataNotFoundException(Constant.BOOK_NOT_FOUND)
@@ -89,21 +108,23 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public void deleteBook(BookDTO bookDTO) throws DataNotFoundException {
         Book book = bookRepository.findByTitle(bookDTO.getTitle()).orElseThrow(
-                () -> new DataNotFoundException("Book not found")
-        );
+                () -> new DataNotFoundException("Book not found"));
+        bookCategoryRepository.deleteByBookId(book.getId());
         bookRepository.deleteById(book.getId());
 
     }
 
     @Override
     public void deleteBookByID(Long id) {
+        bookCategoryRepository.deleteByBookId(id);
         bookRepository.deleteById(id);
     }
 
     @Override
-    public File exportBooksToExcel(List<BookDTO> books) throws DataNotFoundException, FileNotFoundException {
+    public File exportBooksToExcel(List<BookDTO> books) throws DataNotFoundException {
         if (books == null || books.isEmpty()) {
             throw new DataNotFoundException("No books available to export.");
         }

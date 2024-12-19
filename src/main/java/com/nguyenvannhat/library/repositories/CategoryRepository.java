@@ -10,10 +10,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {
-    @Query(value = "SELECT b.* FROM books b" +
-            "INNER JOIN book_categories bc ON bs.id = bc.id" +
-            "INNER JOIN categories c ON c.id = bc.id" +
-            "WHERE c.name = :#{#category.name}",nativeQuery = true)
-    List<Book> findBooksByBookCategories(@Param("category") Category category);
+
+    @Query(
+            "SELECT b FROM Book b " +
+                    "INNER JOIN BookCategories bc ON bc.bookId = b.id " +
+                    "INNER JOIN Category c ON bc.categoryId = c.id " +
+                    "WHERE c.id = :#{#category.id}"
+    )
+    List<Book> findBooksByCategory(@Param("category") Category category);
     Optional<Category> findByName(String name);
 }
