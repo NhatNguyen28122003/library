@@ -4,10 +4,9 @@ import com.nguyenvannhat.library.dtos.PostDTO;
 import com.nguyenvannhat.library.entities.Post;
 import com.nguyenvannhat.library.entities.User;
 import com.nguyenvannhat.library.entities.UserPost;
-import com.nguyenvannhat.library.exceptions.DataNotFoundException;
-import com.nguyenvannhat.library.repositories.PostRepository;
-import com.nguyenvannhat.library.repositories.UserPostRepository;
-import com.nguyenvannhat.library.repositories.UserRepository;
+import com.nguyenvannhat.library.exceptions.ApplicationException;
+import com.nguyenvannhat.library.exceptions.ErrorCode;
+import com.nguyenvannhat.library.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,12 +21,14 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final UserPostRepository userPostRepository;
+    private final PostCommentRepository postCommentRepository;
+    private final UserCommentRepository userCommentRepository;
 
     @Override
-    public void createPost(PostDTO postDTO) throws DataNotFoundException {
+    public void createPost(PostDTO postDTO) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByUsername(auth.getName()).orElseThrow(
-                () -> new DataNotFoundException("User not found")
+                () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
         );
         Post post = Post.builder()
                 .title(postDTO.getTitle())
@@ -36,7 +37,7 @@ public class PostServiceImpl implements PostService {
                 .build();
         post.setCreateBy(user.getFullName());
         post.setUpdateBy(user.getFullName());
-        Long postId= postRepository.save(post).getId();
+        Long postId = postRepository.save(post).getId();
         UserPost userPost = UserPost.builder()
                 .postId(postId)
                 .userId(user.getId())
@@ -45,9 +46,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post getPostById(Long id) throws DataNotFoundException {
+    public Post getPostById(Long id) {
         return postRepository.findById(id).orElseThrow(
-                () -> new DataNotFoundException("Post not found with id: " + id));
+                () -> new ApplicationException(ErrorCode.POST_NOT_FOUND));
     }
 
 
@@ -64,13 +65,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void updatePost(Long id, PostDTO postDTO) throws DataNotFoundException {
+    public void updatePost(Long id, PostDTO postDTO) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByUsername(auth.getName()).orElseThrow(
-                () -> new DataNotFoundException("User not found!!!")
+                () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
         );
         Post post = postRepository.findById(id).orElseThrow(
-                () -> new DataNotFoundException("Post not found with id: " + id)
+                () -> new ApplicationException(ErrorCode.POST_NOT_FOUND)
         );
         post.setTitle(postDTO.getTitle());
         post.setBody(postDTO.getBody());
@@ -80,10 +81,14 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void deletePost(PostDTO postDTO) {
-        if (postRepository.findPostByTitle(postDTO.getTitle()) == null) {
+        Post post = postRepository.findPostByTitle(postDTO.getTitle());
+        if (post == null) {
             return;
         }
-        postRepository.delete(postRepository.findPostByTitle(postDTO.getTitle()));
+        userCommentRepository.deleteByPostId(post.getId());
+        postCommentRepository.deleteByPostId(post.getId());
+        userPostRepository.deleteByPostId(post.getId());
+        postRepository.deleteById(post.getId());
     }
 
     @Override
@@ -107,18 +112,20 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDTO> getTopPosts(int limit) {
-        return postRepository.findAll()
+    public List<PostDTO> getTopPosts() {
+        return postRepository.getTopLikedPosts()
                 .stream()
-                .sorted((post1, post2) -> Integer.compare(post2.getTotalLikes(), post1.getTotalLikes()))
-                .limit(limit)
-                .map(post -> new PostDTO(post.getTitle(), post.getBody()))
-                .collect(Collectors.toList());
+                .map(
+                        post -> new PostDTO(post.getTitle(), post.getBody())
+                ).collect(Collectors.toList());
     }
 
     @Override
     public void deleteById(Long id) {
         if (postRepository.findById(id).isPresent()) {
+            userCommentRepository.deleteByPostId(id);
+            postCommentRepository.deleteByPostId(id);
+            userPostRepository.deleteByPostId(id);
             postRepository.deleteById(id);
         }
     }

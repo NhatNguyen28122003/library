@@ -4,6 +4,8 @@ import com.nguyenvannhat.library.dtos.BookDTO;
 import com.nguyenvannhat.library.entities.Book;
 import com.nguyenvannhat.library.entities.BookLoan;
 import com.nguyenvannhat.library.entities.User;
+import com.nguyenvannhat.library.exceptions.ApplicationException;
+import com.nguyenvannhat.library.exceptions.ErrorCode;
 import com.nguyenvannhat.library.repositories.BookLoanRepository;
 import com.nguyenvannhat.library.repositories.BookRepository;
 import com.nguyenvannhat.library.repositories.UserRepository;
@@ -30,7 +32,7 @@ public class BookLoanServiceImpl implements BookLoanService {
         if (book.getQuantity() > 0) {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User user = userRepository.findByUsername(auth.getName()).orElseThrow(
-                    () -> new RuntimeException("User not found")
+                    () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
             );
             if (user.getIsBorrowed()) {
                 BookLoan bookLoan = BookLoan.builder()
@@ -49,7 +51,7 @@ public class BookLoanServiceImpl implements BookLoanService {
     public void returnBook(Book book) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByUsername(auth.getName()).orElseThrow(
-                () -> new RuntimeException("User not found")
+                () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
         );
         List<Book> books = bookLoanRepository.getBookByUser(user);
         if (books.contains(book)) {

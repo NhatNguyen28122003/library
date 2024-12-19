@@ -1,10 +1,9 @@
 package com.nguyenvannhat.library.services.categories;
 
-import com.nguyenvannhat.library.constant.Constant;
 import com.nguyenvannhat.library.dtos.CategoryDTO;
 import com.nguyenvannhat.library.entities.Category;
-import com.nguyenvannhat.library.exceptions.DataAlreadyException;
-import com.nguyenvannhat.library.exceptions.DataNotFoundException;
+import com.nguyenvannhat.library.exceptions.ApplicationException;
+import com.nguyenvannhat.library.exceptions.ErrorCode;
 import com.nguyenvannhat.library.repositories.BookCategoryRepository;
 import com.nguyenvannhat.library.repositories.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,23 +25,23 @@ public class CategoryServiceImpl implements CategoriesService{
     }
 
     @Override
-    public Category getCategoryById(Long id) throws Exception{
+    public Category getCategoryById(Long id) {
         return categoryRepository.findById(id).orElseThrow(
-                () -> new DataNotFoundException(Constant.CATEGORY_NOT_FOUND)
+                () -> new ApplicationException(ErrorCode.CATEGORY_NOT_FOUND)
         );
     }
 
     @Override
-    public Category findByName(String name) throws Exception {
+    public Category findByName(String name) {
         return categoryRepository.findByName(name).orElseThrow(
-                () -> new DataNotFoundException(Constant.CATEGORY_NOT_FOUND)
+                () -> new ApplicationException(ErrorCode.CATEGORY_NOT_FOUND)
         );
     }
 
     @Override
-    public void createCategory(CategoryDTO categoryDTO) throws Exception {
+    public void createCategory(CategoryDTO categoryDTO) {
         if (categoryRepository.findByName(categoryDTO.getName()).isPresent()) {
-            throw new DataAlreadyException(Constant.CATEGORY_ALREADY_EXISTS);
+            throw new ApplicationException(ErrorCode.CATEGORY_EXIST);
         }
         Category category = Category.builder()
                 .name(categoryDTO.getName())
@@ -51,31 +50,31 @@ public class CategoryServiceImpl implements CategoriesService{
     }
 
     @Override
-    public void updateCategory(Long id, CategoryDTO categoryDTO) throws Exception {
+    public void updateCategory(Long id, CategoryDTO categoryDTO) {
         if (categoryRepository.findById(id).isPresent() &&
         categoryRepository.findByName(categoryDTO.getName()).isPresent()) {
-            throw new DataAlreadyException(Constant.CATEGORY_ALREADY_EXISTS);
+            throw new ApplicationException(ErrorCode.CATEGORY_EXIST);
         }
         Category category = categoryRepository.findById(id).orElseThrow(
-                () -> new DataNotFoundException(Constant.CATEGORY_NOT_FOUND)
+                () -> new ApplicationException(ErrorCode.CATEGORY_NOT_FOUND)
         );
         category.setName(categoryDTO.getName());
         categoryRepository.save(category);
     }
 
     @Override
-    public void deleteCategory(Long id) throws Exception {
+    public void deleteCategory(Long id) {
         Category category = categoryRepository.findById(id).orElseThrow(
-                () -> new DataNotFoundException(Constant.CATEGORY_NOT_FOUND)
+                () -> new ApplicationException(ErrorCode.CATEGORY_NOT_FOUND)
         );
         bookCategoryRepository.deleteByCategoryId(category.getId());
         categoryRepository.delete(category);
     }
 
     @Override
-    public void deleteCategoryByName(String name) throws Exception {
+    public void deleteCategoryByName(String name) {
         Category category = categoryRepository.findByName(name).orElseThrow(
-                () -> new DataNotFoundException(Constant.CATEGORY_NOT_FOUND)
+                () -> new ApplicationException(ErrorCode.CATEGORY_NOT_FOUND)
         );
         bookCategoryRepository.deleteByCategoryId(category.getId());
         categoryRepository.delete(category);

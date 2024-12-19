@@ -5,9 +5,8 @@ import com.nguyenvannhat.library.dtos.UserDTO;
 import com.nguyenvannhat.library.entities.Role;
 import com.nguyenvannhat.library.entities.User;
 import com.nguyenvannhat.library.entities.UserRole;
-import com.nguyenvannhat.library.exceptions.DataAlreadyException;
-import com.nguyenvannhat.library.exceptions.DataNotFoundException;
-import com.nguyenvannhat.library.exceptions.InvalidDataException;
+import com.nguyenvannhat.library.exceptions.ApplicationException;
+import com.nguyenvannhat.library.exceptions.ErrorCode;
 import com.nguyenvannhat.library.repositories.RoleRepository;
 import com.nguyenvannhat.library.repositories.UserRepository;
 import com.nguyenvannhat.library.repositories.UserRoleRepository;
@@ -35,16 +34,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public void register(UserDTO userDTO) throws Exception {
         if (userDTO == null) {
-            throw new IllegalArgumentException("invalid Username/password");
+            throw new ApplicationException(ErrorCode.WRONG_USER_NAME_PASSWORD);
         }
-        userRepository.findByUsername(userDTO.getUsername())
-                .ifPresent(user -> {
-                    try {
-                        throw new DataAlreadyException("User already exists");
-                    } catch (DataAlreadyException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+        if (userRepository.findByUsername(userDTO.getUsername()).isPresent()) {
+            throw new ApplicationException(ErrorCode.USER_EXIST);
+        }
         User user = User.builder()
                 .username(userDTO.getUsername())
                 .password(passwordEncoder.encode(userDTO.getPassword())) // Mã hóa mật khẩu
@@ -58,7 +52,9 @@ public class UserServiceImpl implements UserService {
         user.setCreateBy(userDTO.getUsername());
         user.setUpdateBy(userDTO.getUsername());
         User user1 = userRepository.save(user);
-        Role role = roleRepository.findByName("USER").orElseThrow(() -> new DataNotFoundException("Role not found"));
+        Role role = roleRepository.findByName("USER").orElseThrow(
+                () -> new ApplicationException(ErrorCode.ROLE_NOT_FOUND)
+        );
         UserRole userRole = new UserRole();
         userRole.setUserId(user1.getId());
         userRole.setRoleId(role.getId());
@@ -67,12 +63,12 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public LoginResponse login(String userName, String password) throws Exception {
+    public LoginResponse login(String userName, String password) throws RuntimeException {
         User user = userRepository.findByUsername(userName).orElseThrow(
-                () -> new InvalidDataException("Invalid username or password")
+                () -> new ApplicationException(ErrorCode.WRONG_USER_NAME_PASSWORD)
         );
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new InvalidDataException("Invalid username/password!");
+            throw new ApplicationException(ErrorCode.WRONG_USER_NAME_PASSWORD);
         }
         String token = jwtUtils.generateToken(user);
        return new LoginResponse()
@@ -81,9 +77,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUser(UserDTO userDTO) throws Exception {
+    public void updateUser(UserDTO userDTO) throws RuntimeException {
         User user = userRepository.findByUsername(userDTO.getUsername()).orElseThrow(
-                () -> new DataNotFoundException("User not found")
+                () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
         );
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (userDTO.getUsername() != null &&
@@ -113,9 +109,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByUsername(String username) throws DataNotFoundException{
+    public User findByUsername(String username) throws RuntimeException {
         return userRepository.findByUsername(username).orElseThrow(
-                () -> new DataNotFoundException("User not found!")
+                () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
         );
     }
 
@@ -132,7 +128,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByPhoneNumber(String phoneNumber) throws Exception {
         return userRepository.findByPhoneNumber(phoneNumber).orElseThrow(
-                () -> new DataNotFoundException("User not found!")
+                () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
         );
     }
 

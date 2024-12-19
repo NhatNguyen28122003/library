@@ -1,7 +1,6 @@
 package com.nguyenvannhat.library.components;
 
 import com.nguyenvannhat.library.entities.User;
-import com.nguyenvannhat.library.exceptions.TokenGenerationException;
 import com.nguyenvannhat.library.repositories.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

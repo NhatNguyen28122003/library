@@ -2,7 +2,8 @@ package com.nguyenvannhat.library.services.comments;
 
 import com.nguyenvannhat.library.entities.Comment;
 import com.nguyenvannhat.library.entities.Post;
-import com.nguyenvannhat.library.exceptions.DataNotFoundException;
+import com.nguyenvannhat.library.exceptions.ApplicationException;
+import com.nguyenvannhat.library.exceptions.ErrorCode;
 import com.nguyenvannhat.library.repositories.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,8 +23,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment getCommentById(Long id) throws Exception{
-        return commentRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Comment not found"));
+    public Comment getCommentById(Long id) throws Exception {
+        return commentRepository.findById(id).orElseThrow(() -> new ApplicationException(ErrorCode.COMMENT_NOT_FOUND));
     }
 
     @Override

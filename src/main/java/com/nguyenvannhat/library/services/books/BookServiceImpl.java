@@ -1,12 +1,12 @@
 package com.nguyenvannhat.library.services.books;
 
-import com.nguyenvannhat.library.constant.Constant;
+
 import com.nguyenvannhat.library.dtos.BookDTO;
 import com.nguyenvannhat.library.entities.Book;
 import com.nguyenvannhat.library.entities.BookCategories;
 import com.nguyenvannhat.library.entities.Category;
-import com.nguyenvannhat.library.exceptions.DataNotFoundException;
-import com.nguyenvannhat.library.exceptions.InvalidDataException;
+import com.nguyenvannhat.library.exceptions.ApplicationException;
+import com.nguyenvannhat.library.exceptions.ErrorCode;
 import com.nguyenvannhat.library.repositories.BookCategoryRepository;
 import com.nguyenvannhat.library.repositories.BookRepository;
 import com.nguyenvannhat.library.repositories.CategoryRepository;
@@ -58,7 +58,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void insertBooks(MultipartFile multipartFile) throws InvalidDataException {
+    public void insertBooks(MultipartFile multipartFile)  {
         try (InputStream inputStream = multipartFile.getInputStream()) {
             Workbook workbook = new XSSFWorkbook(inputStream);
             Sheet sheet = workbook.getSheetAt(0);
@@ -75,7 +75,7 @@ public class BookServiceImpl implements BookService {
             }
             bookRepository.findAll();
         } catch (Exception e) {
-            throw new InvalidDataException(e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 
@@ -91,9 +91,17 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void updateBook(Long id, BookDTO bookDTO) throws DataNotFoundException {
+    public BookDTO getBookById(Long id)  {
         Book book = bookRepository.findById(id).orElseThrow(
-                () -> new DataNotFoundException(Constant.BOOK_NOT_FOUND)
+                () -> new ApplicationException(ErrorCode.BOOK_NOT_FOUND)
+        );
+        return new BookDTO(book.getTitle(), book.getAuthor(), book.getPages());
+    }
+
+    @Override
+    public void updateBook(Long id, BookDTO bookDTO) {
+        Book book = bookRepository.findById(id).orElseThrow(
+                () -> new ApplicationException(ErrorCode.BOOK_NOT_FOUND)
         );
         if (!bookDTO.getTitle().isEmpty()) {
             book.setTitle(bookDTO.getTitle());
@@ -109,9 +117,9 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public void deleteBook(BookDTO bookDTO) throws DataNotFoundException {
+    public void deleteBook(BookDTO bookDTO) {
         Book book = bookRepository.findByTitle(bookDTO.getTitle()).orElseThrow(
-                () -> new DataNotFoundException("Book not found"));
+                () -> new ApplicationException(ErrorCode.BOOK_NOT_FOUND));
         bookCategoryRepository.deleteByBookId(book.getId());
         bookRepository.deleteById(book.getId());
 
@@ -124,9 +132,9 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public File exportBooksToExcel(List<BookDTO> books) throws DataNotFoundException {
+    public File exportBooksToExcel(List<BookDTO> books)  {
         if (books == null || books.isEmpty()) {
-            throw new DataNotFoundException("No books available to export.");
+            throw new ApplicationException(ErrorCode.BOOK_NOT_FOUND);
         }
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Books");

@@ -3,7 +3,6 @@ package com.nguyenvannhat.library.filters;
 import com.nguyenvannhat.library.components.CustomUserDetails;
 import com.nguyenvannhat.library.components.JwtUtils;
 import com.nguyenvannhat.library.entities.User;
-import com.nguyenvannhat.library.exceptions.DataNotFoundException;
 import com.nguyenvannhat.library.repositories.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
