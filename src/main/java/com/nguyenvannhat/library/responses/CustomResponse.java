@@ -3,9 +3,16 @@ package com.nguyenvannhat.library.responses;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.context.MessageSource;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Locale;
 
 @Getter
@@ -27,8 +34,19 @@ public class CustomResponse<T> {
         return ResponseEntity.status(status).body(customResponse);
     }
 
-    public static <T> ResponseEntity<CustomResponse<T>> download(T data) {
-        CustomResponse<T> customResponse = new CustomResponse<>("jjjjjj", "OK", data);
-        return ResponseEntity.status(HttpStatus.OK).body(customResponse);
+    public static ResponseEntity<ByteArrayResource> download(String filePath) throws IOException {
+        Path path = Paths.get(filePath);
+        if (!Files.exists(path)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        try {
+            ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + path.getFileName().toString())
+                    .body(resource);
+        } finally {
+            Files.deleteIfExists(path);
+        }
     }
 }

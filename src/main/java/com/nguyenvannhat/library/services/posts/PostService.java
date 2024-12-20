@@ -7,15 +7,15 @@ import com.nguyenvannhat.library.entities.UserCustom;
 import java.util.List;
 
 public interface PostService {
-    void createPost(PostDTO postDTO) throws Exception;
+    void createPost(PostDTO postDTO);
 
-    Post getPostById(Long id) throws Exception;
+    Post getPostById(Long id);
 
     List<PostDTO> getPosts();
 
     Post findPostByUser(UserCustom userCustom);
 
-    void updatePost(Long id, PostDTO postDTO) throws Exception;
+    void updatePost(Long id, PostDTO postDTO);
 
     void deletePost(PostDTO postDTO);
     void deleteById(Long id);

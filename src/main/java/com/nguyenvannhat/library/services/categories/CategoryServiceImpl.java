@@ -10,13 +10,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class CategoryServiceImpl implements CategoriesService{
+public class CategoryServiceImpl implements CategoriesService {
     private final CategoryRepository categoryRepository;
     private final BookCategoryRepository bookCategoryRepository;
+
     @Override
     public List<CategoryDTO> getAllCategories() {
         return categoryRepository.findAll().stream().map(
@@ -52,7 +52,7 @@ public class CategoryServiceImpl implements CategoriesService{
     @Override
     public void updateCategory(Long id, CategoryDTO categoryDTO) {
         if (categoryRepository.findById(id).isPresent() &&
-        categoryRepository.findByName(categoryDTO.getName()).isPresent()) {
+                categoryRepository.findByName(categoryDTO.getName()).isPresent()) {
             throw new ApplicationException(ErrorCode.CATEGORY_EXIST);
         }
         Category category = categoryRepository.findById(id).orElseThrow(

@@ -59,7 +59,7 @@ public class UserController {
 
     @GetMapping("/read/username/{username}")
     @PreAuthorize("fileRole()")
-    public ResponseEntity<CustomResponse<UserCustom>> getUserByUsername(@PathVariable("username") String username) throws RuntimeException {
+    public ResponseEntity<CustomResponse<UserCustom>> getUserByUsername(@PathVariable("username") String username) {
         UserCustom userCustom = userService.findByUsername(username);
         return CustomResponse.success(HttpStatus.OK, SuccessCode.USER_INFORMATION, appConfig.messageSource(), userCustom);
     }
