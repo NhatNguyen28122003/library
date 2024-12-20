@@ -25,7 +25,7 @@ public class PostController {
 
     @PostMapping("/create")
     @PreAuthorize("fileRole()")
-    public ResponseEntity<CustomResponse<PostDTO>> createPost(@RequestBody PostDTO postDTO) throws Exception {
+    public ResponseEntity<CustomResponse<PostDTO>> createPost(@RequestBody PostDTO postDTO) {
         postService.createPost(postDTO);
         return CustomResponse.success(HttpStatus.CREATED, SuccessCode.POST_CREATED, appConfig.messageSource(), postDTO);
     }
@@ -37,7 +37,7 @@ public class PostController {
     }
 
     @GetMapping("/read/{id}")
-    public ResponseEntity<CustomResponse<Post>> getPostById(@PathVariable("id") Long id) throws Exception {
+    public ResponseEntity<CustomResponse<Post>> getPostById(@PathVariable("id") Long id) {
         Post post = postService.getPostById(id);
         return CustomResponse.success(HttpStatus.OK, SuccessCode.POST_INFORMATION, appConfig.messageSource(), post);
     }
@@ -50,7 +50,7 @@ public class PostController {
 
     @PutMapping("/update/{id}")
     @PreAuthorize("fileRole()")
-    public ResponseEntity<CustomResponse<PostDTO>> updatePost(@PathVariable("id") Long id, @RequestBody PostDTO postDTO) throws Exception {
+    public ResponseEntity<CustomResponse<PostDTO>> updatePost(@PathVariable("id") Long id, @RequestBody PostDTO postDTO) {
         postService.updatePost(id, postDTO);
         return CustomResponse.success(HttpStatus.OK, SuccessCode.POST_UPDATED, appConfig.messageSource(), postDTO);
     }
