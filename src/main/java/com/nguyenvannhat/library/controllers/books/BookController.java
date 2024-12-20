@@ -8,6 +8,7 @@ import com.nguyenvannhat.library.responses.CustomResponse;
 import com.nguyenvannhat.library.responses.SuccessCode;
 import com.nguyenvannhat.library.services.books.BookService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -84,8 +85,8 @@ public class BookController {
 
     @GetMapping("/update/export")
     @PreAuthorize("fileRole()")
-    public ResponseEntity<CustomResponse<String>> exportBooksToExcel(@RequestBody List<BookDTO> bookDTOs) throws IOException {
+    public ResponseEntity<ByteArrayResource> exportBooksToExcel(@RequestBody List<BookDTO> bookDTOs) throws IOException {
         File file = bookService.exportBooksToExcel(bookDTOs);
-        return CustomResponse.success(HttpStatus.OK, SuccessCode.BOOK_INFORMATION, appConfig.messageSource(), "Books exported to Excel successfully: " + file.getAbsolutePath());
+        return CustomResponse.download(file.getAbsolutePath());
     }
 }
