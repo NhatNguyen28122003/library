@@ -14,12 +14,9 @@ public class RolePropertiesConfig {
     private final Properties roleMappings = new Properties();
 
     @PostConstruct
-    public void loadRoleMappings() {
-        try (InputStream input = new ClassPathResource("roles.properties").getInputStream()) {
-            roleMappings.load(input);
-        } catch (IOException e) {
-            throw new RuntimeException("Could not load role.properties", e);
-        }
+    public void loadRoleMappings() throws IOException {
+        InputStream input = new ClassPathResource("roles.properties").getInputStream();
+        roleMappings.load(input);
     }
 
     public String getRoleForUri(String uri) {

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -34,21 +35,21 @@ public class BookController {
 
     @PostMapping("/create")
     @PreAuthorize("fileRole()")
-    public ResponseEntity<CustomResponse<BookDTO>> createBook(@RequestBody BookDTO bookDTO) throws Exception {
+    public ResponseEntity<CustomResponse<BookDTO>> createBook(@RequestBody BookDTO bookDTO) {
         bookService.insertBook(bookDTO);
         return CustomResponse.success(HttpStatus.CREATED, SuccessCode.BOOK_CREATED, appConfig.messageSource(), bookDTO);
     }
 
     @PostMapping("/create/bulk")
     @PreAuthorize("fileRole()")
-    public ResponseEntity<CustomResponse<String>> createBooksFromFile(@RequestParam("file") MultipartFile file) throws Exception {
+    public ResponseEntity<CustomResponse<String>> createBooksFromFile(@RequestParam("file") MultipartFile file) throws IOException{
         bookService.insertBooks(file);
         return CustomResponse.success(HttpStatus.CREATED, SuccessCode.BOOK_CREATED, appConfig.messageSource(), "Books created successfully from file.");
     }
 
     @GetMapping("/read/{id}")
     @PreAuthorize("fileRole()")
-    public ResponseEntity<CustomResponse<BookDTO>> getBookById(@PathVariable("id") Long id) throws Exception {
+    public ResponseEntity<CustomResponse<BookDTO>> getBookById(@PathVariable("id") Long id) {
         BookDTO bookDTO = bookService.getBookById(id);
         return CustomResponse.success(HttpStatus.OK, SuccessCode.BOOK_INFORMATION, appConfig.messageSource(), bookDTO);
     }
@@ -62,28 +63,28 @@ public class BookController {
 
     @PutMapping("/update/{id}")
     @PreAuthorize("fileRole()")
-    public ResponseEntity<CustomResponse<BookDTO>> updateBook(@PathVariable("id") Long id, @RequestBody BookDTO bookDTO) throws Exception {
+    public ResponseEntity<CustomResponse<BookDTO>> updateBook(@PathVariable("id") Long id, @RequestBody BookDTO bookDTO) {
         bookService.updateBook(id, bookDTO);
         return CustomResponse.success(HttpStatus.OK, SuccessCode.BOOK_UPDATED, appConfig.messageSource(), bookDTO);
     }
 
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("fileRole()")
-    public ResponseEntity<CustomResponse<String>> deleteBookById(@PathVariable("id") Long id) throws Exception {
+    public ResponseEntity<CustomResponse<String>> deleteBookById(@PathVariable("id") Long id) {
         bookService.deleteBookByID(id);
         return CustomResponse.success(HttpStatus.OK, SuccessCode.BOOK_DELETED, appConfig.messageSource(), "Book with ID " + id + " has been deleted.");
     }
 
     @DeleteMapping("/delete")
     @PreAuthorize("fileRole()")
-    public ResponseEntity<CustomResponse<String>> deleteBook(@RequestBody BookDTO bookDTO) throws Exception {
+    public ResponseEntity<CustomResponse<String>> deleteBook(@RequestBody BookDTO bookDTO) {
         bookService.deleteBook(bookDTO);
         return CustomResponse.success(HttpStatus.OK, SuccessCode.BOOK_DELETED, appConfig.messageSource(), "Book has been deleted.");
     }
 
     @GetMapping("/update/export")
     @PreAuthorize("fileRole()")
-    public ResponseEntity<CustomResponse<String>> exportBooksToExcel(@RequestBody List<BookDTO> bookDTOs) throws Exception {
+    public ResponseEntity<CustomResponse<String>> exportBooksToExcel(@RequestBody List<BookDTO> bookDTOs) throws IOException {
         File file = bookService.exportBooksToExcel(bookDTOs);
         return CustomResponse.success(HttpStatus.OK, SuccessCode.BOOK_INFORMATION, appConfig.messageSource(), "Books exported to Excel successfully: " + file.getAbsolutePath());
     }

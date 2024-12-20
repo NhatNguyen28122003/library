@@ -3,8 +3,6 @@ package com.nguyenvannhat.library.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 @Entity
 @Table(name = "categories")
 @Getter

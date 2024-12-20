@@ -4,8 +4,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
 
-import java.util.Locale;
-
 @Component
 public class AppConfig {
     public MessageSource messageSource() {
@@ -14,6 +12,4 @@ public class AppConfig {
          messageSource.setDefaultEncoding("UTF-8");
          return messageSource;
     }
-
-
 }

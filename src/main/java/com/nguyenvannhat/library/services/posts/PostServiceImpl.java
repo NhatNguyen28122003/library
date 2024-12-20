@@ -2,7 +2,7 @@ package com.nguyenvannhat.library.services.posts;
 
 import com.nguyenvannhat.library.dtos.PostDTO;
 import com.nguyenvannhat.library.entities.Post;
-import com.nguyenvannhat.library.entities.User;
+import com.nguyenvannhat.library.entities.UserCustom;
 import com.nguyenvannhat.library.entities.UserPost;
 import com.nguyenvannhat.library.exceptions.ApplicationException;
 import com.nguyenvannhat.library.exceptions.ErrorCode;
@@ -13,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +26,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public void createPost(PostDTO postDTO) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByUsername(auth.getName()).orElseThrow(
+        UserCustom userCustom = userRepository.findByUsername(auth.getName()).orElseThrow(
                 () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
         );
         Post post = Post.builder()
@@ -35,12 +34,12 @@ public class PostServiceImpl implements PostService {
                 .body(postDTO.getBody())
                 .totalLikes(0)
                 .build();
-        post.setCreateBy(user.getFullName());
-        post.setUpdateBy(user.getFullName());
+        post.setCreateBy(userCustom.getFullName());
+        post.setUpdateBy(userCustom.getFullName());
         Long postId = postRepository.save(post).getId();
         UserPost userPost = UserPost.builder()
                 .postId(postId)
-                .userId(user.getId())
+                .userId(userCustom.getId())
                 .build();
         userPostRepository.save(userPost);
     }
@@ -56,18 +55,18 @@ public class PostServiceImpl implements PostService {
     public List<PostDTO> getPosts() {
         return postRepository.findAll().stream().map(
                 post -> new PostDTO(post.getTitle(), post.getBody())
-        ).collect(Collectors.toList());
+        ).toList();
     }
 
     @Override
-    public Post findPostByUser(User user) {
-        return postRepository.findPostByUser(user);
+    public Post findPostByUser(UserCustom userCustom) {
+        return postRepository.findPostByUser(userCustom);
     }
 
     @Override
     public void updatePost(Long id, PostDTO postDTO) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByUsername(auth.getName()).orElseThrow(
+        UserCustom userCustom = userRepository.findByUsername(auth.getName()).orElseThrow(
                 () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
         );
         Post post = postRepository.findById(id).orElseThrow(
@@ -75,7 +74,7 @@ public class PostServiceImpl implements PostService {
         );
         post.setTitle(postDTO.getTitle());
         post.setBody(postDTO.getBody());
-        post.setUpdateBy(user.getFullName());
+        post.setUpdateBy(userCustom.getFullName());
         postRepository.save(post);
     }
 
@@ -117,7 +116,7 @@ public class PostServiceImpl implements PostService {
                 .stream()
                 .map(
                         post -> new PostDTO(post.getTitle(), post.getBody())
-                ).collect(Collectors.toList());
+                ).toList();
     }
 
     @Override

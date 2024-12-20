@@ -3,7 +3,7 @@ package com.nguyenvannhat.library.controllers.posts;
 import com.nguyenvannhat.library.components.AppConfig;
 import com.nguyenvannhat.library.dtos.PostDTO;
 import com.nguyenvannhat.library.entities.Post;
-import com.nguyenvannhat.library.entities.User;
+import com.nguyenvannhat.library.entities.UserCustom;
 import com.nguyenvannhat.library.responses.CustomResponse;
 import com.nguyenvannhat.library.responses.SuccessCode;
 import com.nguyenvannhat.library.services.posts.PostService;
@@ -78,8 +78,8 @@ public class PostController {
 
     @GetMapping("/search/user")
     @PreAuthorize("fileRole()")
-    public ResponseEntity<CustomResponse<Post>> findPostByUser(@RequestBody User user) {
-        Post post = postService.findPostByUser(user);
+    public ResponseEntity<CustomResponse<Post>> findPostByUser(@RequestBody UserCustom userCustom) {
+        Post post = postService.findPostByUser(userCustom);
         return CustomResponse.success(HttpStatus.OK, SuccessCode.POST_INFORMATION, appConfig.messageSource(), post);
     }
 }

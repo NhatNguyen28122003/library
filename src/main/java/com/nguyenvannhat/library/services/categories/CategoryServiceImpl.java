@@ -21,7 +21,7 @@ public class CategoryServiceImpl implements CategoriesService{
     public List<CategoryDTO> getAllCategories() {
         return categoryRepository.findAll().stream().map(
                 category -> new CategoryDTO(category.getName()
-                )).collect(Collectors.toList());
+                )).toList();
     }
 
     @Override

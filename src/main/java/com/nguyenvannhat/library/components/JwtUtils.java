@@ -1,9 +1,8 @@
 package com.nguyenvannhat.library.components;
 
-import com.nguyenvannhat.library.entities.User;
+import com.nguyenvannhat.library.entities.UserCustom;
 import com.nguyenvannhat.library.exceptions.ApplicationException;
 import com.nguyenvannhat.library.exceptions.ErrorCode;
-import com.nguyenvannhat.library.repositories.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -11,8 +10,6 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +25,6 @@ import java.util.function.Function;
 @Component
 @RequiredArgsConstructor
 public class JwtUtils {
-    private final UserRepository userRepository;
 
     @Value("${jwt.secretKey}")
     private String secretKey;
@@ -36,14 +32,14 @@ public class JwtUtils {
     @Value("${jwt.expiration}")
     private Long expiration;
 
-    public String generateToken(User user) {
+    public String generateToken(UserCustom userCustom) {
         try {
             Map<String, Object> claims = new HashMap<>();
-            claims.put("userName", user.getUsername());
+            claims.put("userName", userCustom.getUsername());
             return Jwts.builder()
                     .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                     .setClaims(claims)
-                    .setSubject(user.getUsername())
+                    .setSubject(userCustom.getUsername())
                     .setExpiration(new Date(System.currentTimeMillis() + expiration))
                     .compact();
         } catch (Exception e) {
@@ -58,10 +54,10 @@ public class JwtUtils {
 
 
     public Claims getClaimsFromToken(String token) {
-        return (Claims) Jwts.parserBuilder()
+        return Jwts.parserBuilder()
                 .setSigningKey(getSignInKey())
                 .build()
-                .parse(token)
+                .parseClaimsJws(token)
                 .getBody();
     }
 
@@ -79,14 +75,6 @@ public class JwtUtils {
                 && userDetails.getUsername().equals(getUserNameFromToken(token));
     }
 
-    public boolean hasPermission(String requiredRole) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || authentication.getAuthorities() == null) {
-            return false;
-        }
-        return authentication.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals(requiredRole));
-    }
 
     private Key getSignInKey() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));

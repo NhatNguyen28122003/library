@@ -23,7 +23,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment getCommentById(Long id) throws Exception {
+    public Comment getCommentById(Long id) {
         return commentRepository.findById(id).orElseThrow(() -> new ApplicationException(ErrorCode.COMMENT_NOT_FOUND));
     }
 

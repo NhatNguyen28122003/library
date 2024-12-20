@@ -16,6 +16,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -58,25 +59,22 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void insertBooks(MultipartFile multipartFile)  {
-        try (InputStream inputStream = multipartFile.getInputStream()) {
-            Workbook workbook = new XSSFWorkbook(inputStream);
-            Sheet sheet = workbook.getSheetAt(0);
-            Iterator<Row> rowIterator = sheet.iterator();
-            rowIterator.next();
-            Row row;
-            while (rowIterator.hasNext()) {
-                row = rowIterator.next();
-                BookDTO bookDTO = new BookDTO();
-                bookDTO.setTitle(row.getCell(1).getStringCellValue());
-                bookDTO.setAuthor(row.getCell(2).getStringCellValue());
-                bookDTO.setPages((int) row.getCell(3).getNumericCellValue());
-                insertBook(bookDTO);
-            }
-            bookRepository.findAll();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    public void insertBooks(MultipartFile multipartFile) throws IOException {
+        InputStream inputStream = multipartFile.getInputStream();
+        Workbook workbook = new XSSFWorkbook(inputStream);
+        Sheet sheet = workbook.getSheetAt(0);
+        Iterator<Row> rowIterator = sheet.iterator();
+        rowIterator.next();
+        Row row;
+        while (rowIterator.hasNext()) {
+            row = rowIterator.next();
+            BookDTO bookDTO = new BookDTO();
+            bookDTO.setTitle(row.getCell(1).getStringCellValue());
+            bookDTO.setAuthor(row.getCell(2).getStringCellValue());
+            bookDTO.setPages((int) row.getCell(3).getNumericCellValue());
+            insertBook(bookDTO);
         }
+        bookRepository.findAll();
     }
 
     @Override
@@ -87,11 +85,11 @@ public class BookServiceImpl implements BookService {
                                 book.getAuthor(),
                                 book.getPages(),
                                 new ArrayList<>())
-                ).collect(Collectors.toList());
+                ).toList();
     }
 
     @Override
-    public BookDTO getBookById(Long id)  {
+    public BookDTO getBookById(Long id) {
         Book book = bookRepository.findById(id).orElseThrow(
                 () -> new ApplicationException(ErrorCode.BOOK_NOT_FOUND)
         );
@@ -132,11 +130,11 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public File exportBooksToExcel(List<BookDTO> books)  {
+    public File exportBooksToExcel(List<BookDTO> books) throws IOException{
         if (books == null || books.isEmpty()) {
             throw new ApplicationException(ErrorCode.BOOK_NOT_FOUND);
         }
-        Workbook workbook = new XSSFWorkbook();
+        Workbook workbook = new SXSSFWorkbook();
         Sheet sheet = workbook.createSheet("Books");
         String[] headers = {"Title", "Author", "Pages"};
         Row headerRow = sheet.createRow(0);
@@ -153,12 +151,9 @@ public class BookServiceImpl implements BookService {
         }
 
         String filePath = "books.xlsx";
-        try (FileOutputStream outputStream = new FileOutputStream(filePath)) {
-            workbook.write(outputStream);
-            workbook.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        FileOutputStream outputStream = new FileOutputStream(filePath);
+        workbook.write(outputStream);
+        workbook.close();
 
         return new File(filePath);
     }

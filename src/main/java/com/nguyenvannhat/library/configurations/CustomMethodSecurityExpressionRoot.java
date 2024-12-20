@@ -20,13 +20,11 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
     /**
      * Constructor to initialize security root with required dependencies.
      *
-     * @param authentication        The current user authentication
-     * @param httpServletRequest    The current HTTP servlet request
-     * @param rolePropertiesConfig  Configuration for role mappings
+     * @param authentication       The current user authentication
+     * @param httpServletRequest   The current HTTP servlet request
+     * @param rolePropertiesConfig Configuration for role mappings
      */
-    public CustomMethodSecurityExpressionRoot(Authentication authentication,
-                                              HttpServletRequest httpServletRequest,
-                                              RolePropertiesConfig rolePropertiesConfig) {
+    public CustomMethodSecurityExpressionRoot(Authentication authentication, HttpServletRequest httpServletRequest, RolePropertiesConfig rolePropertiesConfig) {
         super(authentication);
         this.httpServletRequest = httpServletRequest;
         this.rolePropertiesConfig = rolePropertiesConfig;

@@ -3,7 +3,7 @@ package com.nguyenvannhat.library.services.users;
 import com.nguyenvannhat.library.components.JwtUtils;
 import com.nguyenvannhat.library.dtos.UserDTO;
 import com.nguyenvannhat.library.entities.Role;
-import com.nguyenvannhat.library.entities.User;
+import com.nguyenvannhat.library.entities.UserCustom;
 import com.nguyenvannhat.library.entities.UserRole;
 import com.nguyenvannhat.library.exceptions.ApplicationException;
 import com.nguyenvannhat.library.exceptions.ErrorCode;
@@ -32,14 +32,14 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public void register(UserDTO userDTO) throws Exception {
+    public void register(UserDTO userDTO){
         if (userDTO == null) {
             throw new ApplicationException(ErrorCode.WRONG_USER_NAME_PASSWORD);
         }
         if (userRepository.findByUsername(userDTO.getUsername()).isPresent()) {
             throw new ApplicationException(ErrorCode.USER_EXIST);
         }
-        User user = User.builder()
+        UserCustom userCustom = UserCustom.builder()
                 .username(userDTO.getUsername())
                 .password(passwordEncoder.encode(userDTO.getPassword())) // Mã hóa mật khẩu
                 .fullName(userDTO.getFullName())
@@ -49,14 +49,14 @@ public class UserServiceImpl implements UserService {
                 .age(userDTO.getAge() > 0 ? userDTO.getAge() : null)
                 .address(userDTO.getAddress())
                 .build();
-        user.setCreateBy(userDTO.getUsername());
-        user.setUpdateBy(userDTO.getUsername());
-        User user1 = userRepository.save(user);
+        userCustom.setCreateBy(userDTO.getUsername());
+        userCustom.setUpdateBy(userDTO.getUsername());
+        UserCustom userCustom1 = userRepository.save(userCustom);
         Role role = roleRepository.findByName("USER").orElseThrow(
                 () -> new ApplicationException(ErrorCode.ROLE_NOT_FOUND)
         );
         UserRole userRole = new UserRole();
-        userRole.setUserId(user1.getId());
+        userRole.setUserId(userCustom1.getId());
         userRole.setRoleId(role.getId());
         userRoleRepository.save(userRole);
     }
@@ -64,20 +64,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public LoginResponse login(String userName, String password) throws RuntimeException {
-        User user = userRepository.findByUsername(userName).orElseThrow(
+        UserCustom userCustom = userRepository.findByUsername(userName).orElseThrow(
                 () -> new ApplicationException(ErrorCode.WRONG_USER_NAME_PASSWORD)
         );
-        if (!passwordEncoder.matches(password, user.getPassword())) {
+        if (!passwordEncoder.matches(password, userCustom.getPassword())) {
             throw new ApplicationException(ErrorCode.WRONG_USER_NAME_PASSWORD);
         }
-        String token = jwtUtils.generateToken(user);
+        String token = jwtUtils.generateToken(userCustom);
        return new LoginResponse()
                 .setToken(token)
                 .setExpires(jwtUtils.getExpirationDateFromToken(token));
     }
 
     @Override
-    public User findById(Long id) throws Exception {
+    public UserCustom findById(Long id){
         return userRepository.findById(id).orElseThrow(
                 () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
         );
@@ -85,84 +85,80 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateUser(UserDTO userDTO) throws RuntimeException {
-        User user = userRepository.findByUsername(userDTO.getUsername()).orElseThrow(
+        UserCustom userCustom = userRepository.findByUsername(userDTO.getUsername()).orElseThrow(
                 () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
         );
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (userDTO.getUsername() != null &&
                 userRepository.findByUsername(userDTO.getUsername()).isEmpty()) {
-            user.setUsername(userDTO.getUsername());
+            userCustom.setUsername(userDTO.getUsername());
         }
 
         if (userDTO.getPassword() != null) {
-            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            userCustom.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         }
         if (userDTO.getFullName() != null) {
-            user.setFullName(userDTO.getFullName());
+            userCustom.setFullName(userDTO.getFullName());
         }
         if (!userDTO.getEmail().isEmpty()) {
-            user.setEmail(userDTO.getEmail());
+            userCustom.setEmail(userDTO.getEmail());
         }
 
         if (!userDTO.getPhoneNumber().isEmpty()) {
-            user.setPhoneNumber(userDTO.getPhoneNumber());
+            userCustom.setPhoneNumber(userDTO.getPhoneNumber());
         }
 
         if (!userDTO.getAddress().isEmpty()) {
-            user.setAddress(userDTO.getAddress());
+            userCustom.setAddress(userDTO.getAddress());
         }
-        user.setUpdateBy(authentication.getName());
-        userRepository.save(user);
+        userCustom.setUpdateBy(authentication.getName());
+        userRepository.save(userCustom);
     }
 
     @Override
-    public List<User> findAll() throws Exception {
+    public List<UserCustom> findAll() {
         return userRepository.findAll();
     }
 
     @Override
-    public User findByUsername(String username) throws RuntimeException {
+    public UserCustom findByUsername(String username) throws RuntimeException {
         return userRepository.findByUsername(username).orElseThrow(
                 () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
         );
     }
 
     @Override
-    public List<User> findByFullName(String fullName) {
+    public List<UserCustom> findByFullName(String fullName) {
         return userRepository.findByFullName(fullName);
     }
 
     @Override
-    public List<User> findByEmail(String email) {
+    public List<UserCustom> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
     @Override
-    public User findByPhoneNumber(String phoneNumber) throws Exception {
+    public UserCustom findByPhoneNumber(String phoneNumber){
         return userRepository.findByPhoneNumber(phoneNumber).orElseThrow(
                 () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
         );
     }
 
     @Override
-    public List<User> findByBirthDay(LocalDate birthDay) {
+    public List<UserCustom> findByBirthDay(LocalDate birthDay) {
         return userRepository.findByBirthDay(birthDay);
     }
 
     @Override
-    public void deleteUser(User user) {
-        if (userRepository.findByUsername(user.getUsername()).isPresent()){
-            userRepository.delete(user);
+    public void deleteUser(UserCustom userCustom) {
+        if (userRepository.findByUsername(userCustom.getUsername()).isPresent()){
+            userRepository.delete(userCustom);
         }
     }
 
     @Override
-    public List<GrantedAuthority> getAuthorities() throws Exception {
+    public List<GrantedAuthority> getAuthorities() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new Exception("No authenticated user found");
-        }
         return new ArrayList<>(authentication.getAuthorities());
     }
 

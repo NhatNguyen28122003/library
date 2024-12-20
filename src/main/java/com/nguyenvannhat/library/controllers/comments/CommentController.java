@@ -30,7 +30,7 @@ public class CommentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CustomResponse<Comment>> getCommentById(@PathVariable Long id) throws Exception {
+    public ResponseEntity<CustomResponse<Comment>> getCommentById(@PathVariable Long id){
         Comment comment = commentService.getCommentById(id);
         return CustomResponse.success(HttpStatus.OK, SuccessCode.COMMENT_RETRIEVED, appConfig.messageSource(), comment);
     }

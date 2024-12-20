@@ -7,7 +7,6 @@ import jakarta.persistence.PreUpdate;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
 
@@ -17,10 +16,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public abstract class BaseEntity {
 
-    @Column(name = "create_at",updatable = false)
+    @Column(name = "create_at", updatable = false)
     private LocalDateTime createAt;
 
-    @Column(name = "create_by",updatable = false)
+    @Column(name = "create_by", updatable = false)
     private String createBy;
 
     @Column(name = "update_at")

@@ -1,7 +1,5 @@
 package com.nguyenvannhat.library.dtos;
 
-import jakarta.persistence.UniqueConstraint;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

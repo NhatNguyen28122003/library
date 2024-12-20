@@ -1,6 +1,5 @@
 package com.nguyenvannhat.library.repositories;
 
-import com.nguyenvannhat.library.entities.Post;
 import com.nguyenvannhat.library.entities.PostComment;
 import org.springframework.data.jpa.repository.JpaRepository;
 

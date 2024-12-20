@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface CategoriesService {
     List<CategoryDTO> getAllCategories();
-    Category getCategoryById(Long id) throws Exception;
-    Category findByName(String name) throws Exception;
-    void createCategory(CategoryDTO categoryDTO) throws Exception;
-    void updateCategory(Long id, CategoryDTO categoryDTO) throws Exception;
-    void deleteCategory(Long id) throws Exception;
-    void deleteCategoryByName(String name) throws Exception;
+    Category getCategoryById(Long id);
+    Category findByName(String name);
+    void createCategory(CategoryDTO categoryDTO);
+    void updateCategory(Long id, CategoryDTO categoryDTO);
+    void deleteCategory(Long id);
+    void deleteCategoryByName(String name);
 
 }

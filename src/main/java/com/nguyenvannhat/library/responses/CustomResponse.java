@@ -1,9 +1,7 @@
 package com.nguyenvannhat.library.responses;
 
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.cglib.core.Local;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,14 +21,14 @@ public class CustomResponse<T> {
         this.data = data;
     }
 
-    public static <T> ResponseEntity<CustomResponse<T>> success(HttpStatus status,SuccessCode successCode, MessageSource messageSource, T data) {
-        String message = messageSource.getMessage(successCode.getCode(),null,Locale.getDefault());
-        CustomResponse<T> customResponse = new CustomResponse<T>(successCode.getCode(), message, data);
+    public static <T> ResponseEntity<CustomResponse<T>> success(HttpStatus status, SuccessCode successCode, MessageSource messageSource, T data) {
+        String message = messageSource.getMessage(successCode.getCode(), null, Locale.getDefault());
+        CustomResponse<T> customResponse = new CustomResponse<>(successCode.getCode(), message, data);
         return ResponseEntity.status(status).body(customResponse);
     }
 
     public static <T> ResponseEntity<CustomResponse<T>> download(T data) {
-        CustomResponse<T> customResponse = new CustomResponse<T>("jjjjjj", "OK", data);
+        CustomResponse<T> customResponse = new CustomResponse<>("jjjjjj", "OK", data);
         return ResponseEntity.status(HttpStatus.OK).body(customResponse);
     }
 }

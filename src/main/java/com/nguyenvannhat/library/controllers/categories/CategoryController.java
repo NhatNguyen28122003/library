@@ -29,41 +29,41 @@ public class CategoryController {
     }
 
     @GetMapping("/read/{id}")
-    public ResponseEntity<CustomResponse<Category>> getCategoryById(@PathVariable("id") Long id) throws Exception {
+    public ResponseEntity<CustomResponse<Category>> getCategoryById(@PathVariable("id") Long id)  {
         Category category = categoriesService.getCategoryById(id);
         return CustomResponse.success(HttpStatus.OK, SuccessCode.CATEGORY_INFORMATION, appConfig.messageSource(), category);
     }
 
     @GetMapping("/search/name/{name}")
-    public ResponseEntity<CustomResponse<Category>> getCategoryByName(@PathVariable("name") String name) throws Exception {
+    public ResponseEntity<CustomResponse<Category>> getCategoryByName(@PathVariable("name") String name)  {
         Category category = categoriesService.findByName(name);
         return CustomResponse.success(HttpStatus.OK, SuccessCode.CATEGORY_INFORMATION, appConfig.messageSource(), category);
     }
 
     @PostMapping("/create")
     @PreAuthorize("fileRole()")
-    public ResponseEntity<CustomResponse<CategoryDTO>> createCategory(@RequestBody CategoryDTO categoryDTO) throws Exception {
+    public ResponseEntity<CustomResponse<CategoryDTO>> createCategory(@RequestBody CategoryDTO categoryDTO)  {
         categoriesService.createCategory(categoryDTO);
         return CustomResponse.success(HttpStatus.CREATED, SuccessCode.CATEGORY_CREATED, appConfig.messageSource(), categoryDTO);
     }
 
     @PutMapping("/update/{id}")
     @PreAuthorize("fileRole()")
-    public ResponseEntity<CustomResponse<CategoryDTO>> updateCategory(@PathVariable("id") Long id, @RequestBody CategoryDTO categoryDTO) throws Exception {
+    public ResponseEntity<CustomResponse<CategoryDTO>> updateCategory(@PathVariable("id") Long id, @RequestBody CategoryDTO categoryDTO)  {
         categoriesService.updateCategory(id, categoryDTO);
         return CustomResponse.success(HttpStatus.OK, SuccessCode.CATEGORY_UPDATED, appConfig.messageSource(), categoryDTO);
     }
 
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("fileRole()")
-    public ResponseEntity<CustomResponse<String>> deleteCategory(@PathVariable("id") Long id) throws Exception {
+    public ResponseEntity<CustomResponse<String>> deleteCategory(@PathVariable("id") Long id)  {
         categoriesService.deleteCategory(id);
         return CustomResponse.success(HttpStatus.OK, SuccessCode.CATEGORY_DELETED, appConfig.messageSource(), "Category with ID " + id + " has been deleted.");
     }
 
     @DeleteMapping("/delete/name/{name}")
     @PreAuthorize("fileRole()")
-    public ResponseEntity<CustomResponse<String>> deleteCategoryByName(@PathVariable("name") String name) throws Exception {
+    public ResponseEntity<CustomResponse<String>> deleteCategoryByName(@PathVariable("name") String name)  {
         categoriesService.deleteCategoryByName(name);
         return CustomResponse.success(HttpStatus.OK, SuccessCode.CATEGORY_DELETED, appConfig.messageSource(), "Category with name '" + name + "' has been deleted.");
     }

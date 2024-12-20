@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface CommentService {
     List<Comment> getAllComments();
 
-    Comment getCommentById(Long id) throws Exception;
+    Comment getCommentById(Long id);
 
     List<Comment> getCommentByPost(Post post);
 

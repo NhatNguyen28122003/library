@@ -3,7 +3,7 @@ package com.nguyenvannhat.library.services.bookloan;
 import com.nguyenvannhat.library.dtos.BookDTO;
 import com.nguyenvannhat.library.entities.Book;
 import com.nguyenvannhat.library.entities.BookLoan;
-import com.nguyenvannhat.library.entities.User;
+import com.nguyenvannhat.library.entities.UserCustom;
 import com.nguyenvannhat.library.exceptions.ApplicationException;
 import com.nguyenvannhat.library.exceptions.ErrorCode;
 import com.nguyenvannhat.library.repositories.BookLoanRepository;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -31,12 +31,13 @@ public class BookLoanServiceImpl implements BookLoanService {
     public void borrowBook(Book book) {
         if (book.getQuantity() > 0) {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            User user = userRepository.findByUsername(auth.getName()).orElseThrow(
+            UserCustom userCustom = userRepository.findByUsername(auth.getName()).orElseThrow(
                     () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
             );
-            if (user.getIsBorrowed()) {
+            boolean isBorrowed = userCustom.getIsBorrowed().booleanValue();
+            if (isBorrowed) {
                 BookLoan bookLoan = BookLoan.builder()
-                        .userId(user.getId())
+                        .userId(userCustom.getId())
                         .bookId(book.getId())
                         .borrowDate(new Date(System.currentTimeMillis()))
                         .build();
@@ -50,23 +51,24 @@ public class BookLoanServiceImpl implements BookLoanService {
     @Override
     public void returnBook(Book book) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByUsername(auth.getName()).orElseThrow(
+        UserCustom userCustom = userRepository.findByUsername(auth.getName()).orElseThrow(
                 () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
         );
-        List<Book> books = bookLoanRepository.getBookByUser(user);
+        List<Book> books = bookLoanRepository.getBookByUser(userCustom);
         if (books.contains(book)) {
             book.setQuantity(book.getQuantity() + 1);
-            BookLoan bookLoan = bookLoanRepository.getBookLoanByUserIdAndBookId(user.getId(), book.getId());
+            BookLoan bookLoan = bookLoanRepository.getBookLoanByUserIdAndBookId(userCustom.getId(), book.getId());
             bookRepository.deleteById(bookLoan.getId());
         }
     }
 
     @Override
     public List<String> getBlackList() {
-        List<User> users = userRepository.findAll();
+        List<UserCustom> userCustoms = userRepository.findAll();
         List<String> blackList = new ArrayList<>();
-        for (User u : users) {
-            if (!u.getIsBorrowed()) {
+        for (UserCustom u : userCustoms) {
+            boolean isBorrowed = u.getIsBorrowed().booleanValue();
+            if (!isBorrowed) {
                 blackList.add(u.getFullName());
             }
         }
@@ -74,25 +76,25 @@ public class BookLoanServiceImpl implements BookLoanService {
     }
 
     @Override
-    public void addUserBlackList(User user) {
+    public void addUserBlackList(UserCustom userCustom) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        user.setUpdateBy(auth.getName());
-        user.setIsBorrowed(false);
-        userRepository.save(user);
+        userCustom.setUpdateBy(auth.getName());
+        userCustom.setIsBorrowed(false);
+        userRepository.save(userCustom);
     }
 
     @Override
-    public void removeUserBlackList(User user) {
+    public void removeUserBlackList(UserCustom userCustom) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        user.setUpdateBy(auth.getName());
-        user.setIsBorrowed(true);
-        userRepository.save(user);
+        userCustom.setUpdateBy(auth.getName());
+        userCustom.setIsBorrowed(true);
+        userRepository.save(userCustom);
     }
 
     @Override
-    public List<BookDTO> getListBooksByUser(User user) {
-        return bookLoanRepository.getBookByUser(user).stream().map(
+    public List<BookDTO> getListBooksByUser(UserCustom userCustom) {
+        return bookLoanRepository.getBookByUser(userCustom).stream().map(
                 book -> new BookDTO(book.getTitle(), book.getAuthor(),book.getPages())
-        ).collect(Collectors.toList());
+        ).toList();
     }
 }

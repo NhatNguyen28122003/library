@@ -3,7 +3,6 @@ package com.nguyenvannhat.library.exceptions;
 import com.nguyenvannhat.library.components.AppConfig;
 import com.nguyenvannhat.library.responses.ErrorResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,7 +12,7 @@ import java.util.Locale;
 
 @RestControllerAdvice
 @RequiredArgsConstructor
-public class GlobalException {
+public class GlobalHandleException {
     private final AppConfig appConfig;
 
     @ExceptionHandler(ApplicationException.class)
