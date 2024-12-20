@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class WebConfig extends GlobalMethodSecurityConfiguration implements WebMvcConfigurer {
 
@@ -27,7 +29,17 @@ public class WebConfig extends GlobalMethodSecurityConfiguration implements WebM
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers("/user/register", "/user/login", "/user/information", "/comments/**", "/post/**").permitAll().anyRequest().authenticated()).addFilterAfter(jwtFilters, UsernamePasswordAuthenticationFilter.class);
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(
+                        authorizeRequests ->
+                                authorizeRequests
+                                        .requestMatchers("/user/register",
+                                                "/user/login","/user/information",
+                                                "/comments/**",
+                                                "/post/**").permitAll()
+                                        .anyRequest().authenticated())
+                .addFilterAfter(jwtFilters, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
