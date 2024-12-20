@@ -21,7 +21,10 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -130,7 +133,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public File exportBooksToExcel(List<BookDTO> books) throws IOException{
+    public File exportBooksToExcel(List<BookDTO> books) throws IOException {
         if (books == null || books.isEmpty()) {
             throw new ApplicationException(ErrorCode.BOOK_NOT_FOUND);
         }
@@ -149,13 +152,13 @@ public class BookServiceImpl implements BookService {
             row.createCell(1).setCellValue(book.getAuthor());
             row.createCell(2).setCellValue(book.getPages());
         }
-
         String filePath = "books.xlsx";
-        FileOutputStream outputStream = new FileOutputStream(filePath);
-        workbook.write(outputStream);
-        workbook.close();
-
-        return new File(filePath);
+        try (FileOutputStream outputStream = new FileOutputStream(filePath)) {
+            workbook.write(outputStream);
+            return new File(filePath);
+        } finally {
+            workbook.close();
+        }
     }
 
 }
