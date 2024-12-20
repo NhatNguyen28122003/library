@@ -116,6 +116,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> findAll() throws Exception {
+        return userRepository.findAll();
+    }
+
+    @Override
     public User findByUsername(String username) throws RuntimeException {
         return userRepository.findByUsername(username).orElseThrow(
                 () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)

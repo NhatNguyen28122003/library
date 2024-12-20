@@ -12,6 +12,7 @@ public interface UserService {
     void register(UserDTO userDTO) throws Exception;
     LoginResponse login(String email, String password) throws Exception;
     void updateUser(UserDTO userDTO) throws Exception;
+    List<User> findAll() throws Exception;
     User findByUsername(String username) throws RuntimeException;
     User findById(Long id) throws Exception;
     List<User> findByFullName(String fullName) throws Exception;
