@@ -77,6 +77,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User findById(Long id) throws Exception {
+        return userRepository.findById(id).orElseThrow(
+                () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
+        );
+    }
+
+    @Override
     public void updateUser(UserDTO userDTO) throws RuntimeException {
         User user = userRepository.findByUsername(userDTO.getUsername()).orElseThrow(
                 () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)

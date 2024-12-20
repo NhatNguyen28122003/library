@@ -1,6 +1,8 @@
 package com.nguyenvannhat.library.components;
 
 import com.nguyenvannhat.library.entities.User;
+import com.nguyenvannhat.library.exceptions.ApplicationException;
+import com.nguyenvannhat.library.exceptions.ErrorCode;
 import com.nguyenvannhat.library.repositories.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -45,7 +47,7 @@ public class JwtUtils {
                     .setExpiration(new Date(System.currentTimeMillis() + expiration))
                     .compact();
         } catch (Exception e) {
-            throw new TokenGenerationException("Could not generate token!");
+            throw new ApplicationException(ErrorCode.TOKEN_NOT_CREATE);
         }
     }
 

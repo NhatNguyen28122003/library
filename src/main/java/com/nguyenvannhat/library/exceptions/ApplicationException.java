@@ -3,7 +3,8 @@ package com.nguyenvannhat.library.exceptions;
 
 import lombok.Getter;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
+
+import java.util.Locale;
 
 @Getter
 public class ApplicationException extends RuntimeException {
@@ -13,7 +14,7 @@ public class ApplicationException extends RuntimeException {
         this.errorCode = errorCode;
     }
 
-    public String getLocalizedMessage(MessageSource messageSource) {
-        return messageSource.getMessage(errorCode.getCode(), null, LocaleContextHolder.getLocale());
+    public String getLocalizedMessage(MessageSource messageSource, Object... args) {
+        return messageSource.getMessage(errorCode.getCode(), args, Locale.ENGLISH);
     }
 }

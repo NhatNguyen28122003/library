@@ -3,6 +3,8 @@ package com.nguyenvannhat.library.filters;
 import com.nguyenvannhat.library.components.CustomUserDetails;
 import com.nguyenvannhat.library.components.JwtUtils;
 import com.nguyenvannhat.library.entities.User;
+import com.nguyenvannhat.library.exceptions.ApplicationException;
+import com.nguyenvannhat.library.exceptions.ErrorCode;
 import com.nguyenvannhat.library.repositories.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -39,7 +41,7 @@ public class JwtFilters extends OncePerRequestFilter {
                 String token = authHeader.substring(7);
                 String userName = jwtUtils.getUserNameFromToken(token);
                 User user = userRepository.findByUsername(userName).orElseThrow(
-                        () -> new DataNotFoundException("User not found")
+                        () -> new ApplicationException(ErrorCode.USER_NOT_FOUND)
                 );
                 UserDetails userDetails = new CustomUserDetails(user,userRepository);
                 if (jwtUtils.validateToken(token, userDetails)) {

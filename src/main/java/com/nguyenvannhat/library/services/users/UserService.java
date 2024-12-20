@@ -13,6 +13,7 @@ public interface UserService {
     LoginResponse login(String email, String password) throws Exception;
     void updateUser(UserDTO userDTO) throws Exception;
     User findByUsername(String username) throws RuntimeException;
+    User findById(Long id) throws Exception;
     List<User> findByFullName(String fullName) throws Exception;
     List<User> findByEmail(String email) throws Exception;
     User findByPhoneNumber(String phoneNumber) throws Exception;
