@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {
+    Optional<Category> findById(Long id);
 
     @Query(
             "SELECT b FROM Book b " +
@@ -19,4 +20,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     )
     List<Book> findBooksByCategory(@Param("category") Category category);
     Optional<Category> findByName(String name);
+    void deleteByName(String name);
+    void deleteById(Long id);
 }

@@ -7,38 +7,55 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "users")
+@Table
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserCustom extends BaseEntity {
+public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
-    @Column(name = "user_name", unique = true, nullable = false)
-    private String username;
-    @Column(name = "password")
+
+    @Column(unique = true, nullable = false)
+    private String userName;
+
     private String password;
-    @Column(name = "full_name")
+
+    @Column
     private String fullName;
-    @Column(name = "phone_number", unique = true)
+
+    @Column(unique = true)
     private String phoneNumber;
-    @Column(name = "email")
+
+    @Column(unique = true)
     private String email;
-    @Column(name = "identity_number",unique = true, nullable = false)
+
+    @Column(unique = true)
     private Long identityNumber;
 
-    @Column(name = "bitrh_day")
     @Temporal(TemporalType.DATE)
     private LocalDate birthDay;
 
-    @Column(name = "age")
     private Integer age;
-    @Column(name = "address")
+
     private String address;
+
+    private Boolean isActive;
+
+    private Boolean isDelete;
+
+    private Boolean isBorrowed;
+
+
+    @Override
+    protected void onCreate() {
+        super.onCreate();
+        isActive = true;
+        isDelete = false;
+        isBorrowed = true;
+    }
 
     @Override
     public boolean equals(Object o) {

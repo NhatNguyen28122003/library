@@ -10,14 +10,13 @@ import java.io.IOException;
 import java.util.List;
 
 public interface BookService {
-    List<Book> getAllBooks();
+    List<BookDTO> getAllBooks();
+    BookDTO getBook(Long id);
+    List<Category> getCategoriesByBook(Book book);
+    Book addBook(BookDTO bookDTO);
+    List<BookDTO> addMultipleBooks(MultipartFile files) throws IOException;
+    File exportBooksToWorkbook() throws IOException;
+    Book updateBook(Long id, BookDTO bookDTO);
+    void deleteBook(Long id);
 
-    void insertBook(BookDTO bookDTO);
-    void insertBooks(MultipartFile multipartFile) throws IOException;
-    BookDTO getBookById(Long id);
-    List<BookDTO> findAllBooksByCategory(Category category);
-    void updateBook(Long id, BookDTO bookDTO);
-    void deleteBook(BookDTO bookDTO);
-    File exportBooksToExcel(List<BookDTO> bookDTO) throws IOException;
-    void deleteBookByID(Long id) ;
 }

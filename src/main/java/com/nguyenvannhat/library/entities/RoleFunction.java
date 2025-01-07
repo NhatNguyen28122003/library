@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "role_functions")
+@Table
 @Getter
 @Setter
 @ToString
@@ -14,10 +14,6 @@ public class RoleFunction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "role_id")
     private Long roleId;
-
-    @Column(name ="function_id")
     private Long functionId;
 }

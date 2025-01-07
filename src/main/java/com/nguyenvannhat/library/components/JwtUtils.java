@@ -1,8 +1,8 @@
 package com.nguyenvannhat.library.components;
 
-import com.nguyenvannhat.library.entities.UserCustom;
+import com.nguyenvannhat.library.constants.Constant;
+import com.nguyenvannhat.library.entities.User;
 import com.nguyenvannhat.library.exceptions.ApplicationException;
-import com.nguyenvannhat.library.exceptions.ErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -10,7 +10,6 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -32,18 +31,19 @@ public class JwtUtils {
     @Value("${jwt.expiration}")
     private Long expiration;
 
-    public String generateToken(UserCustom userCustom) {
+    public String generateToken(User user) {
         try {
+
             Map<String, Object> claims = new HashMap<>();
-            claims.put("userName", userCustom.getUsername());
+            claims.put("userName", user.getUserName());
             return Jwts.builder()
                     .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                     .setClaims(claims)
-                    .setSubject(userCustom.getUsername())
+                    .setSubject(user.getUserName())
                     .setExpiration(new Date(System.currentTimeMillis() + expiration))
                     .compact();
-        } catch (Exception e) {
-            throw new ApplicationException(ErrorCode.TOKEN_NOT_CREATE);
+        } catch (ApplicationException e) {
+            throw new ApplicationException(Constant.ERROR_GENERATE_TOKEN);
         }
     }
 
@@ -70,9 +70,8 @@ public class JwtUtils {
         return getClaim(token, Claims::getSubject);
     }
 
-    public boolean validateToken(String token, UserDetails userDetails) {
-        return getClaim(token, Claims::getExpiration).toInstant().isAfter(Instant.now())
-                && userDetails.getUsername().equals(getUserNameFromToken(token));
+    public boolean validateToken(String token) {
+        return getClaim(token, Claims::getExpiration).toInstant().isAfter(Instant.now());
     }
 
 

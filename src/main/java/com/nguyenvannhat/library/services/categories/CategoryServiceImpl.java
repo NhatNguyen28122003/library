@@ -1,82 +1,94 @@
 package com.nguyenvannhat.library.services.categories;
 
+import com.nguyenvannhat.library.constants.Constant;
 import com.nguyenvannhat.library.dtos.CategoryDTO;
+import com.nguyenvannhat.library.entities.Book;
 import com.nguyenvannhat.library.entities.Category;
 import com.nguyenvannhat.library.exceptions.ApplicationException;
-import com.nguyenvannhat.library.exceptions.ErrorCode;
 import com.nguyenvannhat.library.repositories.BookCategoryRepository;
 import com.nguyenvannhat.library.repositories.CategoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CategoryServiceImpl implements CategoriesService {
+public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final BookCategoryRepository bookCategoryRepository;
 
     @Override
-    public List<CategoryDTO> getAllCategories() {
-        return categoryRepository.findAll().stream().map(
-                category -> new CategoryDTO(category.getName()
-                )).toList();
-    }
-
-    @Override
-    public Category getCategoryById(Long id) {
-        return categoryRepository.findById(id).orElseThrow(
-                () -> new ApplicationException(ErrorCode.CATEGORY_NOT_FOUND)
-        );
-    }
-
-    @Override
-    public Category findByName(String name) {
-        return categoryRepository.findByName(name).orElseThrow(
-                () -> new ApplicationException(ErrorCode.CATEGORY_NOT_FOUND)
-        );
-    }
-
-    @Override
-    public void createCategory(CategoryDTO categoryDTO) {
-        if (categoryRepository.findByName(categoryDTO.getName()).isPresent()) {
-            throw new ApplicationException(ErrorCode.CATEGORY_EXIST);
-        }
+    public Category addCategory(CategoryDTO categoryDTO) {
         Category category = Category.builder()
                 .name(categoryDTO.getName())
                 .build();
-        categoryRepository.save(category);
+        return categoryRepository.save(category);
     }
 
     @Override
-    public void updateCategory(Long id, CategoryDTO categoryDTO) {
-        if (categoryRepository.findById(id).isPresent() &&
-                categoryRepository.findByName(categoryDTO.getName()).isPresent()) {
-            throw new ApplicationException(ErrorCode.CATEGORY_EXIST);
+    public List<CategoryDTO> addMultipleCategories(MultipartFile file) throws IOException {
+        InputStream inputStream = file.getInputStream();
+        Workbook workbook = new XSSFWorkbook(inputStream);
+        Sheet sheet = workbook.getSheetAt(0);
+        Iterator<Row> rowIterator = sheet.iterator();
+        // Bỏ qua dòng đầu tiên
+        rowIterator.next();
+        while (rowIterator.hasNext()) {
+            Row row = rowIterator.next();
+            categoryRepository.save(Category.builder()
+                    .name(row.getCell(0).getStringCellValue())
+                    .build());
         }
-        Category category = categoryRepository.findById(id).orElseThrow(
-                () -> new ApplicationException(ErrorCode.CATEGORY_NOT_FOUND)
-        );
-        category.setName(categoryDTO.getName());
-        categoryRepository.save(category);
+        return getCategories();
     }
 
     @Override
-    public void deleteCategory(Long id) {
+    public Category updateCategory(Long id, CategoryDTO categoryDTO) {
         Category category = categoryRepository.findById(id).orElseThrow(
-                () -> new ApplicationException(ErrorCode.CATEGORY_NOT_FOUND)
+                () -> new ApplicationException(Constant.ERROR_CATEGORY_NOT_FOUND)
         );
-        bookCategoryRepository.deleteByCategoryId(category.getId());
-        categoryRepository.delete(category);
+        if (categoryRepository.findByName(categoryDTO.getName()).isEmpty()) {
+            category.setName(categoryDTO.getName());
+        }
+        return categoryRepository.save(category);
     }
 
     @Override
-    public void deleteCategoryByName(String name) {
-        Category category = categoryRepository.findByName(name).orElseThrow(
-                () -> new ApplicationException(ErrorCode.CATEGORY_NOT_FOUND)
+    public void deleteCategory(CategoryDTO categoryDTO) {
+        Category category = categoryRepository.findByName(categoryDTO.getName()).orElseThrow(
+                () -> new ApplicationException(Constant.ERROR_CATEGORY_NOT_FOUND)
         );
         bookCategoryRepository.deleteByCategoryId(category.getId());
-        categoryRepository.delete(category);
+        categoryRepository.deleteByName(categoryDTO.getName());
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        Category category = categoryRepository.findById(id).orElseThrow(
+                () -> new ApplicationException(Constant.ERROR_CATEGORY_NOT_FOUND)
+        );
+        bookCategoryRepository.deleteByCategoryId(category.getId());
+        categoryRepository.deleteById(id);
+    }
+
+    @Override
+    public List<CategoryDTO> getCategories() {
+        return categoryRepository.findAll().stream().map(
+                category -> new CategoryDTO(category.getName())
+        ).toList();
+    }
+
+    @Override
+    public List<Book> getBooksByCategory(Category category) {
+        return categoryRepository.findBooksByCategory(category);
     }
 }

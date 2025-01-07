@@ -14,10 +14,11 @@ import lombok.*;
 public class Function {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
     @Column(name = "function_name")
     private String functionName;
+
+    private String description;
 
 }

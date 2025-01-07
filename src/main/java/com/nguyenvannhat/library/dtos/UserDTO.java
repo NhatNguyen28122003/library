@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class UserDTO {
     @NotNull(message = "Username must not be empty!")
-    private String username;
+    private String userName;
     @NotNull(message = "Password must not be empty!")
     private String password;
     private String fullName;

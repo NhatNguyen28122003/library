@@ -16,18 +16,13 @@ import java.util.Date;
 public class BookLoan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
-    @Column(name = "borrow_date")
     private Date borrowDate;
 
-    @Column(name = "return_date")
     private Date returnDate;
 
-    @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "book_id")
     private Long bookId;
 }

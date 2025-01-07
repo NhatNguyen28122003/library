@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "posts")
+@Table
 @Getter
 @Setter
 @ToString
@@ -14,13 +14,11 @@ import lombok.*;
 public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
-    @Column(name = "title",unique = true)
+    @Column(unique = true)
     private String title;
 
-    @Column(name = "body")
     private String body;
 
     private int totalLikes;
