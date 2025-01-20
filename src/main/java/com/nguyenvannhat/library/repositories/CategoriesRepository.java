@@ -1,15 +1,15 @@
 package com.nguyenvannhat.library.repositories;
 
-import com.nguyenvannhat.library.entities.Role;
+import com.nguyenvannhat.library.entities.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface RoleRepository extends JpaRepository<Role, Long> {
+public interface CategoriesRepository extends JpaRepository<Category, Long> {
     @Query(
-            "SELECT r FROM Role r WHERE r.name = :#{#name}"
+            "SELECT c FROM Category c WHERE c.name = :#{#name}"
     )
-    Optional<Role> findByName(@Param("name") String name);
+    Optional<Category> findByName(@Param("name") String name);
 }

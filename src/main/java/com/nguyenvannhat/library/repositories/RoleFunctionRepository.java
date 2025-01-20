@@ -10,10 +10,12 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface RoleFunctionRepository extends JpaRepository<RoleFunction, Long> {
-    @Query("SELECT f FROM Function f " +
-            "INNER JOIN RoleFunction rf ON rf.functionId = f.id " +
-            "INNER JOIN Role r ON r.id = rf.roleId " +
-            "WHERE r.id = :#{#role.id}")
-    List<Function> findByRole(@Param("role") Role role);
 
+    @Query(
+            "SELECT f FROM Function f " +
+                    "INNER JOIN RoleFunction rf ON rf.functionId = f.id " +
+                    "INNER JOIN Role r ON rf.roleId = r.id " +
+                    "WHERE r.id = :#{#role.id}"
+    )
+    List<Function> findFunctionsByRole(@Param("role") Role role);
 }

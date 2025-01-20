@@ -1,9 +1,7 @@
 package com.nguyenvannhat.library.dtos;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
 import java.util.List;
 
@@ -11,7 +9,11 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class BookDTO {
+
+
+    @NotNull(message = "Title not be empty!")
     private String title;
     private String author;
     private int pages;

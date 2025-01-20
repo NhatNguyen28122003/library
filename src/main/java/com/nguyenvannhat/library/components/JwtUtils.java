@@ -15,8 +15,6 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.sql.Date;
 import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -33,7 +31,6 @@ public class JwtUtils {
 
     public String generateToken(User user) {
         try {
-
             Map<String, Object> claims = new HashMap<>();
             claims.put("userName", user.getUserName());
             return Jwts.builder()
@@ -46,12 +43,6 @@ public class JwtUtils {
             throw new ApplicationException(Constant.ERROR_GENERATE_TOKEN);
         }
     }
-
-    public OffsetDateTime getExpirationDateFromToken(String token) {
-        Claims claims = getClaimsFromToken(token);
-        return claims.getExpiration().toInstant().atOffset(ZoneOffset.UTC);
-    }
-
 
     public Claims getClaimsFromToken(String token) {
         return Jwts.parserBuilder()

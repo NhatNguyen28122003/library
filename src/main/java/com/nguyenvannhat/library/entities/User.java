@@ -23,7 +23,6 @@ public class User extends BaseEntity {
 
     private String password;
 
-    @Column
     private String fullName;
 
     @Column(unique = true)
@@ -33,7 +32,7 @@ public class User extends BaseEntity {
     private String email;
 
     @Column(unique = true)
-    private Long identityNumber;
+    private String identityNumber;
 
     @Temporal(TemporalType.DATE)
     private LocalDate birthDay;

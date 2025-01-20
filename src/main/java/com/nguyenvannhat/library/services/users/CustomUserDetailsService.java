@@ -29,39 +29,35 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUserName(username).orElseThrow(
-                () -> new ApplicationException(Constant.ERROR_WRONG_USER_NAME_PASSWORD)
-        );
         return new UserDetails() {
+            public User getUser() {
+                return userRepository.findByUserName(username).orElseThrow(
+                        () -> new ApplicationException(Constant.ERROR_USER_NOT_FOUND)
+                );
+            }
             @Override
             public Collection<? extends GrantedAuthority> getAuthorities() {
                 List<GrantedAuthority> authorities = new ArrayList<>();
-                for (String roleName : getListRoleName(user)) {
-                    authorities.add(new SimpleGrantedAuthority(roleName));
+                List<Role> roles = userRoleRepository.findRolesByUser(getUser());
+                for (Role role : roles) {
+                    authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+                    List<Function> functions = roleFunctionRepository.findFunctionsByRole(role);
+                    for (Function function : functions) {
+                        authorities.add(new SimpleGrantedAuthority( function.getFunctionName()));
+                    }
                 }
                 return authorities;
             }
 
             @Override
             public String getPassword() {
-                return user.getPassword();
+                return getUser().getPassword();
             }
 
             @Override
             public String getUsername() {
-                return user.getUserName();
+                return getUser().getUserName();
             }
         };
-    }
-
-    private List<String> getListRoleName(User user) {
-        Role role = userRoleRepository.findRoleByUser(user).orElseThrow(
-                () -> new RuntimeException("Role not found")
-        );
-        List<Function> functions = roleFunctionRepository.findByRole(role);
-        List<String> roleName = new java.util.ArrayList<>(functions.stream().map(
-                Function::getFunctionName).toList());
-        roleName.add(role.getName());
-        return roleName;
     }
 }

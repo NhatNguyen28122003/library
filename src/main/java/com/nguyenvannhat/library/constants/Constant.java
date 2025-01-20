@@ -9,7 +9,6 @@ public class Constant {
 
     // Error: Objects already exist
     public static final String ERROR_USER_EXIST = "error.user.exist";
-    public static final String ERROR_BOOK_EXIST = "error.book.exist";
     public static final String ERROR_CATEGORY_EXIST = "error.category.exist";
     public static final String ERROR_POST_EXIST = "error.post.exist";
     public static final String ERROR_COMMENT_EXIST = "error.comment.exist";

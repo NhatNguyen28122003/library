@@ -2,6 +2,7 @@ package com.nguyenvannhat.library.services.users;
 
 import com.nguyenvannhat.library.dtos.UserDTO;
 import com.nguyenvannhat.library.entities.User;
+import com.nguyenvannhat.library.responses.CustomResponse;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -11,21 +12,27 @@ public interface UserService {
 
     String login(UserDTO userDTO);
 
-    User getUserByEmail(String email);
+    CustomResponse<User> findById(Long id);
 
-    User getUserById(Long id);
+    CustomResponse<User> findByUserName(String username);
 
-    User getUserByUsername(String username);
+    CustomResponse<User> findByPhoneNumber(String phoneNumber);
 
-    User getUserByPhoneNumber(String phoneNumber);
+    CustomResponse<User> findByEmail(String email);
 
-    List<UserDTO> getAllUsers();
+    CustomResponse<User> findByIdentity(String identity);
 
-    List<UserDTO> getAllUsersByAddress(String address);
+    CustomResponse<List<UserDTO>> findAllUsers();
 
-    List<UserDTO> getUsersByAge(Integer age);
+    CustomResponse<List<UserDTO>> findAllUsersByAge(Integer age);
 
-    List<UserDTO> getUsersByBirthday(LocalDate birthday);
+    CustomResponse<List<UserDTO>> findAllUsersByAddress(String address);
 
-    User update(UserDTO userDTO);
+    CustomResponse<List<UserDTO>> findAllUsersByBirthday(LocalDate birthday);
+
+    CustomResponse<List<UserDTO>> findAllUsersFullName(String fullName);
+
+    CustomResponse<User> update(Long id, UserDTO userDTO);
+
+    void delete(Long id);
 }

@@ -16,7 +16,6 @@ public class Post extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
     private String title;
 
     private String body;
@@ -24,12 +23,12 @@ public class Post extends BaseEntity {
     private int totalLikes;
 
     @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
+    protected void onCreate() {
+        super.onCreate();
     }
 
     @Override
-    public int hashCode() {
-        return super.hashCode();
+    protected void onUpdate() {
+        super.onUpdate();
     }
 }

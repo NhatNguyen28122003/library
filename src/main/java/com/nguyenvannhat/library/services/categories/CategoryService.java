@@ -3,23 +3,26 @@ package com.nguyenvannhat.library.services.categories;
 import com.nguyenvannhat.library.dtos.CategoryDTO;
 import com.nguyenvannhat.library.entities.Book;
 import com.nguyenvannhat.library.entities.Category;
+import com.nguyenvannhat.library.responses.CustomResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 
 public interface CategoryService {
-    Category addCategory(CategoryDTO categoryDTO);
+    CustomResponse<List<CategoryDTO>> createCategory(CategoryDTO categoryDTO);
+    CustomResponse<List<CategoryDTO>> createMultiCategories(MultipartFile multipartFile) throws IOException;
 
-    List<CategoryDTO> addMultipleCategories(MultipartFile file) throws IOException;
+    CustomResponse<Category> findById(Long id);
 
-    Category updateCategory(Long id, CategoryDTO categoryDTO);
+    CustomResponse<Category> findByName(String categoryName);
 
-    void deleteCategory(CategoryDTO categoryDTO);
+    CustomResponse<List<CategoryDTO>> findAllCategories();
 
-    void deleteById(Long id);
+    CustomResponse<List<CategoryDTO>> updateCategory(Long id, CategoryDTO categoryDTO);
 
-    List<CategoryDTO> getCategories();
+    CustomResponse<List<CategoryDTO>> deleteCategory(String categoryName);
 
-    List<Book> getBooksByCategory(Category category);
+    CustomResponse<List<Book>> findByCategory(String categoryName);
+
 }

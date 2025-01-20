@@ -21,7 +21,6 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
         if (authentication == null || uri == null || method == null) {
             return false;
         }
-
         return hasRole(authentication, uri);
     }
 

@@ -1,24 +1,32 @@
 package com.nguyenvannhat.library.repositories;
 
+import com.nguyenvannhat.library.entities.Comment;
 import com.nguyenvannhat.library.entities.Post;
 import com.nguyenvannhat.library.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
 import java.util.List;
+import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
+    Optional<Post> findByTitle(String title);
+
     @Query(
             "SELECT p FROM Post p " +
-            "INNER JOIN UserPost up ON up.postId = p.id " +
-            "INNER JOIN User u ON u.id = up.userId " +
-            "WHERE u.userName = :#{#user.userName}"
+                    "INNER JOIN UserPost up ON up.postId = p.id " +
+                    "INNER JOIN User u ON up.userId = u.id " +
+                    "WHERE u.id = :#{#user.id}"
     )
-    Post findPostByUser(@Param("user") User user);
+    List<Post> findPostsByUser(@Param("user") User user);
 
-    Post findPostByTitle(String title);
-
-    @Query("SELECT p FROM Post p WHERE p.totalLikes = (SELECT MAX(p.totalLikes) FROM Post p)")
-    List<Post> getTopLikedPosts();
+    @Query(
+            "SELECT c FROM Comment c " +
+                    "INNER JOIN PostComment pc ON pc.commentId = c.id " +
+                    "INNER JOIN Post p ON pc.postId = p.id " +
+                    "WHERE p.id = :#{#post.id}"
+    )
+    List<Comment> findCommentsByPost(@Param("post") Post post);
 }

@@ -1,25 +1,19 @@
 package com.nguyenvannhat.library.repositories;
 
+import com.nguyenvannhat.library.entities.User;
 import com.nguyenvannhat.library.entities.UserComment;
-import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface UserCommentRepository extends JpaRepository<UserComment, Long> {
-    void deleteByUserId(Long userId);
-    void deleteByCommentId(Long commentId);
-    void deleteByUserIdAndCommentId(Long userId, Long commentId);
-    @Modifying
-    @Transactional
     @Query(
-            "DELETE FROM UserComment uc " +
-                    "WHERE uc.commentId IN ( " +
-                    "SELECT c.id FROM Comment c " +
-                    "INNER JOIN PostComment pc ON pc.commentId = c.id " +
-                    "INNER JOIN Post p ON p.id = pc.postId " +
-                    "WHERE p.id = :#{#postId})"
+            "SELECT uc FROM UserComment uc " +
+                    "INNER JOIN User u ON uc.userId = u.id " +
+                    "INNER JOIN Comment c ON c.id = uc.commentId " +
+                    "WHERE u.id = :#{#user.id}"
     )
-    void deleteByPostId(@Param("postId") Long postId);
+    List<UserComment> findAllByUser(@Param("user") User user);
 }

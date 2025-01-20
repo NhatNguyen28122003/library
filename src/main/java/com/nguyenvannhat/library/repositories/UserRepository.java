@@ -10,15 +10,19 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUserName(String username);
 
-    List<User> findByFullName(String fullName);
-
     Optional<User> findByEmail(String email);
 
     Optional<User> findByPhoneNumber(String phoneNumber);
 
-    List<User> findByBirthDay(LocalDate birthDay);
+    Optional<User> findByIdentityNumber(String identityNumber);
 
+    List<User> findByFullName(String fullName);
+    List<User> findByBirthDay(LocalDate birthday);
+    List<User> findByAge(Integer age);
     List<User> findByAddress(String address);
 
-    List<User> findByAge(Integer age);
+    void deleteByUserName(String username);
+    void deleteByEmail(String email);
+    void deleteByPhoneNumber(String phoneNumber);
+    void deleteByIdentityNumber(String identityNumber);
 }

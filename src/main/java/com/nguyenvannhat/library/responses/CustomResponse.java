@@ -3,7 +3,8 @@ package com.nguyenvannhat.library.responses;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
 
 @Getter
 @Setter
@@ -21,7 +22,7 @@ public class CustomResponse<T> {
         return new CustomResponse<>(statusCode, message, null);
     }
 
-    public static <T extends MultipartFile> CustomResponse<T> download(int statusCode, String message, T data) {
+    public static <T extends File> CustomResponse<T> download(int statusCode, String message, T data) {
         return new CustomResponse<>(statusCode, message, data);
     }
 
