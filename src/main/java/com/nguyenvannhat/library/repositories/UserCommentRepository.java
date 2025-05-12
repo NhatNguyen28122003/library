@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface UserCommentRepository extends JpaRepository<UserComment, Long> {
@@ -16,4 +17,6 @@ public interface UserCommentRepository extends JpaRepository<UserComment, Long> 
                     "WHERE u.id = :#{#user.id}"
     )
     List<UserComment> findAllByUser(@Param("user") User user);
+
+    List<UserComment> findByCommentIdIn(Collection<Long> commentIds);
 }

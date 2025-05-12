@@ -11,13 +11,14 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Function {
+public class Function extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "function_name")
-    private String functionName;
+    private String code;
+
+    private String name;
 
     private String description;
 

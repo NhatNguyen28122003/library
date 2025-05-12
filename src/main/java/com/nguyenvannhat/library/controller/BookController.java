@@ -1,31 +1,59 @@
 package com.nguyenvannhat.library.controller;
 
-import com.nguyenvannhat.library.entities.Book;
-import com.nguyenvannhat.library.responses.CustomResponse;
+import com.nguyenvannhat.library.dtos.BookDTO;
+import com.nguyenvannhat.library.dtos.requests.BookRequest;
 import com.nguyenvannhat.library.services.books.BookService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/book")
 @RequiredArgsConstructor
+@RequestMapping("/book")
 public class BookController {
     private final BookService bookService;
 
-    @PreAuthorize("fileRole(#request)")
-    @GetMapping("/read")
-    public CustomResponse<List<Book>> getBooks(HttpServletRequest request) {
-        return bookService.findAllBook();
+    @PostMapping("/importExcel")
+    public ResponseEntity<List<BookDTO>> importExcel(@RequestParam("file") MultipartFile file) {
+        List<BookDTO> books = bookService.importExcel(file);
+        return ResponseEntity.ok(books);
     }
 
-    @PostMapping("/create/multi")
-    public CustomResponse<List<Book>> createBooks(@RequestParam MultipartFile multipartFile, HttpServletRequest request) throws IOException {
-        return bookService.addMultiBook(multipartFile);
+    @PostMapping("/add")
+    public ResponseEntity<BookDTO> add(@RequestBody BookRequest book) {
+        BookDTO bookDTO = bookService.addBook(book);
+        return ResponseEntity.ok(bookDTO);
+    }
+
+    @GetMapping("/getAllBook")
+    public ResponseEntity<List<BookDTO>> getAllBook() {
+        List<BookDTO> books = bookService.getAllBooks();
+        return ResponseEntity.ok(books);
+    }
+
+    @PutMapping("/book/{id}")
+    public ResponseEntity<BookDTO> updateBook(@PathVariable Long id, @RequestBody BookRequest book) {
+        BookDTO bookDTO = bookService.update(id, book);
+        return ResponseEntity.ok(bookDTO);
+    }
+
+    @GetMapping("/book/{id}")
+    public ResponseEntity<BookDTO> getBook(@PathVariable Long id) {
+        BookDTO bookDTO = bookService.getBook(id);
+        return ResponseEntity.ok(bookDTO);
+    }
+
+    @PostMapping("/exportExcel")
+    public ResponseEntity<byte[]> exportExcel() {
+        byte[] bytes = bookService.exportExcel();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+        headers.setContentDispositionFormData("attachment", "books.xlsx");
+        return ResponseEntity.ok().headers(headers).body(bytes);
     }
 }

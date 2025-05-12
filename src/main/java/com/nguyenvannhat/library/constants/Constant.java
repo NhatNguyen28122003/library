@@ -21,6 +21,8 @@ public class Constant {
     public static final String ERROR_COMMENT_NOT_FOUND = "error.comment.not_found";
     public static final String ERROR_ROLE_NOT_FOUND = "error.role.not_found";
     public static final String ERROR_TOKEN_NOT_FOUND = "error.token.not_found";
+    public static final String ERROR_FUNCTION_NOT_FOUND = "Function not found!";
+    public static final String ERROR_FUNCTION_CODE_EXISTS = "Function code already exists!";
 
     // Login error
     public static final String ERROR_WRONG_USER_NAME_PASSWORD = "error.wrong_user_name_password";
@@ -61,6 +63,6 @@ public class Constant {
     public static final String SUCCESS_COMMENT_GET_INFORMATION = "success.comment.get_information";
     public static final String SUCCESS_COMMENT_RETRIEVED = "success.comment.retrieved";
 
-    public static final String SUCCESS_LOGIN= "success.login";
+    public static final String SUCCESS_LOGIN = "success.login";
 }
 

@@ -3,6 +3,7 @@ package com.nguyenvannhat.library.components;
 import com.nguyenvannhat.library.constants.Constant;
 import com.nguyenvannhat.library.entities.User;
 import com.nguyenvannhat.library.exceptions.ApplicationException;
+import com.nguyenvannhat.library.repositories.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -10,11 +11,14 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.sql.Date;
 import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -22,6 +26,7 @@ import java.util.function.Function;
 @Component
 @RequiredArgsConstructor
 public class JwtUtils {
+    private final UserRepository userRepository;
 
     @Value("${jwt.secretKey}")
     private String secretKey;
@@ -39,16 +44,22 @@ public class JwtUtils {
                     .setSubject(user.getUserName())
                     .setExpiration(new Date(System.currentTimeMillis() + expiration))
                     .compact();
-        } catch (ApplicationException e) {
+        } catch (Exception e) {
             throw new ApplicationException(Constant.ERROR_GENERATE_TOKEN);
         }
     }
 
+    public OffsetDateTime getExpirationDateFromToken(String token) {
+        Claims claims = getClaimsFromToken(token);
+        return claims.getExpiration().toInstant().atOffset(ZoneOffset.UTC);
+    }
+
+
     public Claims getClaimsFromToken(String token) {
-        return Jwts.parserBuilder()
+        return (Claims) Jwts.parserBuilder()
                 .setSigningKey(getSignInKey())
                 .build()
-                .parseClaimsJws(token)
+                .parse(token)
                 .getBody();
     }
 
@@ -61,11 +72,10 @@ public class JwtUtils {
         return getClaim(token, Claims::getSubject);
     }
 
-    public boolean validateToken(String token) {
-        return getClaim(token, Claims::getExpiration).toInstant().isAfter(Instant.now());
+    public boolean validateToken(String token, UserDetails userDetails) {
+        return getClaim(token, Claims::getExpiration).toInstant().isAfter(Instant.now())
+                && userDetails.getUsername().equals(getUserNameFromToken(token));
     }
-
-
     private Key getSignInKey() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
     }

@@ -14,7 +14,7 @@ public interface PostCommentRepository extends JpaRepository<PostComment, Long> 
     @Query(
             "SELECT pc FROM PostComment pc " +
                     "INNER JOIN Post p ON pc.postId = p.id " +
-                    "WHERE p.id = :#{#post.id}"
+                    "WHERE p.id = :#{#post.id} and p.isDeleted = false "
     )
     List<PostComment> findByPost(@Param("post") Post post);
 
@@ -22,7 +22,7 @@ public interface PostCommentRepository extends JpaRepository<PostComment, Long> 
     @Query(
             "SELECT pc FROM PostComment pc " +
                     "INNER JOIN Comment c ON pc.commentId = c.id " +
-                    "WHERE c.id = :#{#comment.id}"
+                    "WHERE c.id = :#{#comment.id} and c.isDeleted = false"
     )
     List<PostComment> findByComment(@Param("comment") Comment comment);
 }

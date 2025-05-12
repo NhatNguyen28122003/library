@@ -11,14 +11,19 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Book {
+public class Book extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(unique = true, nullable = false)
+    private String code;
 
     private String title;
 
     private String author;
 
-    private int pages;
+    private String url;
+
+    private Integer pages;
 }

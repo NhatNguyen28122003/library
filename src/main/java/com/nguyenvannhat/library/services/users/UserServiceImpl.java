@@ -2,207 +2,120 @@ package com.nguyenvannhat.library.services.users;
 
 import com.nguyenvannhat.library.components.JwtUtils;
 import com.nguyenvannhat.library.constants.Constant;
+import com.nguyenvannhat.library.dtos.LoginDTO;
 import com.nguyenvannhat.library.dtos.UserDTO;
-import com.nguyenvannhat.library.entities.*;
+import com.nguyenvannhat.library.dtos.requests.UserRequest;
+import com.nguyenvannhat.library.entities.Role;
+import com.nguyenvannhat.library.entities.User;
+import com.nguyenvannhat.library.entities.UserRole;
 import com.nguyenvannhat.library.exceptions.ApplicationException;
-import com.nguyenvannhat.library.repositories.*;
-import com.nguyenvannhat.library.responses.CustomResponse;
+import com.nguyenvannhat.library.repositories.RoleRepository;
+import com.nguyenvannhat.library.repositories.UserRepository;
+import com.nguyenvannhat.library.repositories.UserRoleRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.context.MessageSource;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Locale;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final UserRoleRepository userRoleRepository;
     private final RoleRepository roleRepository;
-    private final UserPostRepository userPostRepository;
-    private final UserCommentRepository userCommentRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final MessageSource messageSource;
-    private final ModelMapper modelMapper;
+    private final UserRoleRepository userRoleRepository;
     private final JwtUtils jwtUtils;
+    private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
-    public User register(UserDTO userDTO) {
-        if (userRepository.findByUserName(userDTO.getUserName()).isPresent()) {
+    public UserDTO register(UserRequest userRequest) {
+        String userName = userRequest.getUserName();
+        Optional<User> existingUser = userRepository.findByUserName(userName);
+        if (existingUser.isPresent()) {
+            log.error("User already exists");
             throw new ApplicationException(Constant.ERROR_USER_EXIST);
         }
         User newUser = User.builder()
-                .userName(userDTO.getUserName())
-                .password(passwordEncoder.encode(userDTO.getPassword()))
-                .email(userDTO.getEmail())
-                .phoneNumber(userDTO.getPhoneNumber())
-                .birthDay(userDTO.getBirthDay())
-                .age(userDTO.getAge())
-                .address(userDTO.getAddress())
-                .identityNumber(userDTO.getIdentityNumber())
+                .userName(userName)
+                .password(passwordEncoder.encode(userRequest.getPassword()))
+                .address(userRequest.getAddress())
+                .phoneNumber(userRequest.getPhoneNumber())
+                .email(userRequest.getEmail())
+                .birthDay(userRequest.getBirthDay())
+                .age(userRequest.getAge())
+                .fullName(userRequest.getFullName())
+                .isBorrowed(true)
+                .identityNumber(userRequest.getIdentityNumber())
                 .build();
-        User user = userRepository.save(newUser);
-
-        Role role = roleRepository.findByName("USER").orElseThrow(
-                () -> new ApplicationException(Constant.ERROR_ROLE_NOT_FOUND)
-        );
-        userRoleRepository.save(UserRole.builder()
-                .userId(user.getId())
-                .roleId(role.getId())
-                .build());
-        return user;
+        newUser.setCreateBy(newUser.getUserName());
+        newUser = userRepository.save(newUser);
+        Optional<Role> roleUser = roleRepository.findByCode("user");
+        if (roleUser.isPresent()) {
+            Role role = roleUser.get();
+            UserRole userRole = UserRole.builder()
+                    .userId(newUser.getId())
+                    .roleId(role.getId())
+                    .build();
+            userRoleRepository.save(userRole);
+        }
+        return modelMapper.map(newUser, UserDTO.class);
     }
 
     @Override
-    public String login(UserDTO userDTO) {
-        User user = userRepository.findByUserName(userDTO.getUserName()).orElseThrow(
-                () -> new ApplicationException(Constant.ERROR_WRONG_USER_NAME_PASSWORD)
-        );
-        if (!passwordEncoder.matches(userDTO.getPassword(), user.getPassword())) {
+    public List<UserDTO> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream().map(user -> modelMapper.map(user, UserDTO.class)).collect(Collectors.toList());
+    }
+
+    @Override
+    public LoginDTO login(String userName, String password) {
+        log.info("----Bắt đầu đăng nhập ----");
+        Optional<User> existingUser = userRepository.findByUserName(userName);
+        if (existingUser.isEmpty()) {
+            log.error("User doesn't exist");
             throw new ApplicationException(Constant.ERROR_WRONG_USER_NAME_PASSWORD);
         }
-        return jwtUtils.generateToken(user);
-    }
-
-    @Override
-    public CustomResponse<User> findById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(
-                () -> new ApplicationException(Constant.ERROR_USER_NOT_FOUND)
-        );
-        return CustomResponse.success(HttpStatus.OK.value(),
-                messageSource.getMessage(Constant.SUCCESS_USER_GET_INFORMATION, null, Locale.ENGLISH),
-                user);
-    }
-
-    @Override
-    public CustomResponse<User> findByUserName(String username) {
-        User user = userRepository.findByUserName(username).orElseThrow(
-                () -> new ApplicationException(Constant.ERROR_USER_NOT_FOUND)
-        );
-        return CustomResponse.success(HttpStatus.OK.value(),
-                messageSource.getMessage(Constant.SUCCESS_USER_GET_INFORMATION, null, Locale.ENGLISH),
-                user);
-    }
-
-    @Override
-    public CustomResponse<User> findByPhoneNumber(String phoneNumber) {
-        User user = userRepository.findByPhoneNumber(phoneNumber).orElseThrow(
-                () -> new ApplicationException(Constant.ERROR_USER_NOT_FOUND)
-        );
-        return CustomResponse.success(HttpStatus.OK.value(),
-                messageSource.getMessage(Constant.SUCCESS_USER_GET_INFORMATION, null, Locale.ENGLISH),
-                user);
-    }
-
-    @Override
-    public CustomResponse<User> findByEmail(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(
-                () -> new ApplicationException(Constant.ERROR_USER_NOT_FOUND)
-        );
-        return CustomResponse.success(HttpStatus.OK.value(),
-                messageSource.getMessage(Constant.SUCCESS_USER_GET_INFORMATION, null, Locale.ENGLISH),
-                user);
-    }
-
-    @Override
-    public CustomResponse<User> findByIdentity(String identity) {
-        User user = userRepository.findByIdentityNumber(identity).orElseThrow(
-                () -> new ApplicationException(Constant.ERROR_USER_NOT_FOUND)
-        );
-        return CustomResponse.success(HttpStatus.OK.value(),
-                messageSource.getMessage(Constant.SUCCESS_USER_GET_INFORMATION, null, Locale.ENGLISH),
-                user);
-    }
-
-    @Override
-    public CustomResponse<List<UserDTO>> findAllUsers() {
-        List<UserDTO> users = userRepository.findAll().stream()
-                .map(user -> modelMapper.map(user, UserDTO.class))
-                .toList();
-        return CustomResponse.success(HttpStatus.OK.value(),
-                messageSource.getMessage(Constant.SUCCESS_USER_GET_INFORMATION, null, Locale.ENGLISH),
-                users);
-    }
-
-    @Override
-    public CustomResponse<List<UserDTO>> findAllUsersFullName(String fullName) {
-        List<UserDTO> users = userRepository.findByFullName(fullName).stream()
-                .map(user -> modelMapper.map(user, UserDTO.class))
-                .toList();
-        return CustomResponse.success(HttpStatus.OK.value(),
-                messageSource.getMessage(Constant.SUCCESS_USER_GET_INFORMATION, null, Locale.ENGLISH),
-                users);
-    }
-
-    @Override
-    public CustomResponse<List<UserDTO>> findAllUsersByAge(Integer age) {
-        List<UserDTO> users = userRepository.findByAge(age).stream()
-                .map(user -> modelMapper.map(user, UserDTO.class))
-                .toList();
-        return CustomResponse.success(HttpStatus.OK.value(),
-                messageSource.getMessage(Constant.SUCCESS_USER_GET_INFORMATION, null, Locale.ENGLISH),
-                users);
-    }
-
-    @Override
-    public CustomResponse<List<UserDTO>> findAllUsersByAddress(String address) {
-        List<UserDTO> users = userRepository.findByAddress(address).stream()
-                .map(user -> modelMapper.map(user, UserDTO.class))
-                .toList();
-        return CustomResponse.success(HttpStatus.OK.value(),
-                messageSource.getMessage(Constant.SUCCESS_USER_GET_INFORMATION, null, Locale.ENGLISH),
-                users);
-    }
-
-    @Override
-    public CustomResponse<List<UserDTO>> findAllUsersByBirthday(LocalDate birthday) {
-        List<UserDTO> users = userRepository.findByBirthDay(birthday).stream()
-                .map(user -> modelMapper.map(user, UserDTO.class))
-                .toList();
-        return CustomResponse.success(HttpStatus.OK.value(),
-                messageSource.getMessage(Constant.SUCCESS_USER_GET_INFORMATION, null, Locale.ENGLISH),
-                users);
-    }
-
-    @Override
-    public CustomResponse<User> update(Long id, UserDTO userDTO) {
-        User user = userRepository.findById(id).orElseThrow(
-                () -> new ApplicationException(Constant.ERROR_USER_NOT_FOUND)
-        );
-        if (userRepository.findByUserName(userDTO.getUserName()).isEmpty()) {
-            user.setUserName(userDTO.getUserName());
+        User user = existingUser.get();
+        if (user.getIsDeleted().equals(Boolean.TRUE)) {
+            log.error("Tài khoản đã bị xóa");
+            throw new ApplicationException(Constant.ERROR_WRONG_USER_NAME_PASSWORD);
         }
-        if (userRepository.findByEmail(userDTO.getEmail()).isEmpty()) {
-            user.setEmail(userDTO.getEmail());
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            log.error("Password nhập không đúng");
+            throw new ApplicationException(Constant.ERROR_WRONG_USER_NAME_PASSWORD);
         }
-        if (userRepository.findByPhoneNumber(String.valueOf(userDTO.getPhoneNumber())).isEmpty()) {
-            user.setPhoneNumber(userDTO.getPhoneNumber());
-        }
-        user.setFullName(userDTO.getFullName());
-        user.setAddress(userDTO.getAddress());
-        user.setBirthDay(userDTO.getBirthDay());
-        user.setAge(userDTO.getAge());
-        return CustomResponse.success(HttpStatus.OK.value(),
-                messageSource.getMessage(Constant.SUCCESS_USER_GET_INFORMATION, null, Locale.ENGLISH),
-                userRepository.save(user));
+        String token = jwtUtils.generateToken(user);
+        OffsetDateTime expiration = jwtUtils.getExpirationDateFromToken(token);
+        log.info("---Hoàn tất dăng nhập---");
+        return LoginDTO.builder()
+                .userName(user.getUserName())
+                .token(token)
+                .expiration(expiration)
+                .build();
     }
 
     @Override
-    public void delete(Long id) {
-        if (userRepository.findById(id).isEmpty()) {
-            return;
-        }
-        List<UserRole> userRoles = userRoleRepository.findByUserId(id);
-        List<UserPost> userPosts = userPostRepository.findAllByUser(userRepository.findById(id).get());
-        List<UserComment> userComments = userCommentRepository.findAllByUser(userRepository.findById(id).get());
-        userCommentRepository.deleteAll(userComments);
-        userPostRepository.deleteAll(userPosts);
-        userRoleRepository.deleteAll(userRoles);
-        userRepository.deleteById(id);
+    public UserDTO update(Long id, UserRequest userRequest) {
+        return null;
+    }
+
+    @Override
+    public UserDTO softDelete(User user) {
+        user.setIsDeleted(true);
+        userRepository.save(user);
+        return modelMapper.map(user, UserDTO.class);
+    }
+
+    @Override
+    public void deleteAccount(Long id) {
+        Optional<User> user = userRepository.findById(id);
+        user.ifPresent(userRepository::delete);
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 
 import java.util.Properties;
 
+
 public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurityExpressionHandler {
 
     private final Properties properties;

@@ -32,4 +32,6 @@ public interface UserRoleRepository extends JpaRepository<UserRole, Long> {
             "INNER JOIN Role r ON ur.roleId = r.id " +
             "WHERE r.id = :#{#role.id}")
     List<User> findUsersByRole(@Param("role") Role role);
+
+    void deleteUserRoleByRoleId(Long id);
 }

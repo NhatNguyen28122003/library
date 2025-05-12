@@ -11,9 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryDTO {
-
-
     @NotBlank(message = "Category's name can not be empty!!!")
     private String name;
-
 }

@@ -18,4 +18,6 @@ public interface RoleFunctionRepository extends JpaRepository<RoleFunction, Long
                     "WHERE r.id = :#{#role.id}"
     )
     List<Function> findFunctionsByRole(@Param("role") Role role);
+
+    void deleteRoleFunctionByRoleId(Long id);
 }

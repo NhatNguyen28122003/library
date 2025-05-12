@@ -1,7 +1,5 @@
 package com.nguyenvannhat.library.dtos;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,12 +13,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDTO {
-    @NotNull(message = "Username must not be empty!")
+    private Long id;
     private String userName;
-
-    @NotNull(message = "Password length must be >= 8!")
-    @Min(value = 8)
-    private String password;
     private String fullName;
     private String phoneNumber;
     private String email;

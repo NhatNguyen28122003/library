@@ -25,13 +25,10 @@ public class User extends BaseEntity {
 
     private String fullName;
 
-    @Column(unique = true)
     private String phoneNumber;
 
-    @Column(unique = true)
     private String email;
 
-    @Column(unique = true)
     private String identityNumber;
 
     @Temporal(TemporalType.DATE)
@@ -41,28 +38,6 @@ public class User extends BaseEntity {
 
     private String address;
 
-    private Boolean isActive;
-
-    private Boolean isDelete;
-
     private Boolean isBorrowed;
 
-
-    @Override
-    protected void onCreate() {
-        super.onCreate();
-        isActive = true;
-        isDelete = false;
-        isBorrowed = true;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
 }

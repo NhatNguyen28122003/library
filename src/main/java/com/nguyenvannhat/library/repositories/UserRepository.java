@@ -2,27 +2,23 @@ package com.nguyenvannhat.library.repositories;
 
 import com.nguyenvannhat.library.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByUserName(String username);
+    Optional<User> findByUserName(String userName);
 
-    Optional<User> findByEmail(String email);
-
-    Optional<User> findByPhoneNumber(String phoneNumber);
-
-    Optional<User> findByIdentityNumber(String identityNumber);
-
-    List<User> findByFullName(String fullName);
-    List<User> findByBirthDay(LocalDate birthday);
-    List<User> findByAge(Integer age);
-    List<User> findByAddress(String address);
-
-    void deleteByUserName(String username);
-    void deleteByEmail(String email);
-    void deleteByPhoneNumber(String phoneNumber);
-    void deleteByIdentityNumber(String identityNumber);
+    @Query(
+            "select distinct u from User u " +
+                    "where u.isDeleted = false " +
+                    "and ( cast(u.id as string ) like %:keyword% " +
+                    "or u.userName like %:keyword% " +
+                    "or u.phoneNumber like %:keyword% " +
+                    "or u.email like %:keyword% " +
+                    "or u.fullName like %:keyword% " +
+                    ")"
+    )
+    Optional<User> search(@Param("keyword") String keyword);
 }

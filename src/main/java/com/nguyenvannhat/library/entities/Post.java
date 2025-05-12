@@ -16,19 +16,14 @@ public class Post extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
+    private String code;
+
     private String title;
 
     private String body;
 
-    private int totalLikes;
+    private Integer totalLikes;
 
-    @Override
-    protected void onCreate() {
-        super.onCreate();
-    }
-
-    @Override
-    protected void onUpdate() {
-        super.onUpdate();
-    }
+    private Integer disLikes;
 }

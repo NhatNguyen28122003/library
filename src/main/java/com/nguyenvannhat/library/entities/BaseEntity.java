@@ -28,11 +28,15 @@ public abstract class BaseEntity {
     @Column(name = "update_by")
     private String updateBy;
 
+    private Boolean isDeleted;
+
+
 
     @PrePersist
     protected void onCreate() {
         this.createAt = LocalDateTime.now();
         this.updateAt = LocalDateTime.now();
+        this.isDeleted = false;
     }
 
     @PreUpdate

@@ -10,6 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FunctionDTO {
-    private String functionName;
+    private String code;
+    private String name;
     private String description;
 }
